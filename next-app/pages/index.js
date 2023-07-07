@@ -1,68 +1,69 @@
-import styles from "../styles/Home.module.css";
+import { useState } from "react"
+import { DIDSession } from 'did-session'
+import { EthereumWebAuth, getAccountId } from '@didtools/pkh-ethereum'
+import { ComposeClient } from '@composedb/client'
+import { Ed25519Provider } from "key-did-provider-ed25519";
+import { getResolver } from 'key-did-resolver'
+import { CeramicClient } from "@ceramicnetwork/http-client";
+import { definition } from '../definition'
 
-const IndexPage = () => {
+
+function IndexPopup() {
+  const [data, setData] = useState("")
+
+  const ceramic = new CeramicClient("http://localhost:7007");
+
+  const composeClient = new ComposeClient({
+    ceramic: "http://localhost:7007",
+    // cast our definition as a RuntimeCompositeDefinition
+    definition: definition,
+  });
+
+  const authenticateEthPKH = async (ceramic, compose) => {
+    const sessionStr = localStorage.getItem('ceramic:eth_did') // for production you will want a better place than localStorage for your sessions.
+    let session
+
+    if (sessionStr) {
+      session = await DIDSession.fromSession(sessionStr)
+    }
+
+    if (!session || (session.hasSession && session.isExpired)) {
+      if (window.ethereum === null || window.ethereum === undefined) {
+        throw new Error("No injected Ethereum provider found.");
+      }
+
+      // We enable the ethereum provider to get the user's addresses.
+      const ethProvider = window.ethereum;
+      // request ethereum accounts.
+      const addresses = await ethProvider.enable({
+        method: "eth_requestAccounts",
+      });
+      const accountId = await getAccountId(ethProvider, addresses[0])
+      const authMethod = await EthereumWebAuth.getAuthMethod(ethProvider, accountId)
+
+      /**
+       * Create DIDSession & provide capabilities for resources that we want to access.
+       * @NOTE: Any production applications will want to provide a more complete list of capabilities.
+       *        This is not done here to allow you to add more datamodels to your application.
+       */
+
+      // TODO: Switch to explicitly authorized resources. This sets a bad precedent.
+      session = await DIDSession.authorize(authMethod, { resources: compose.resources })
+      // Set the session in localStorage.
+      localStorage.setItem('ceramic:eth_did', session.serialize());
+    }
+
+    // Set our Ceramic DID to be our session DID.
+    compose.setDID(session.did)
+    ceramic.did = session.did
+    return
+  }
+
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <span className={styles.logo}>
-            <img
-              src="assets/vercel.svg"
-              alt="Vercel Logo"
-              width={72}
-              height={16}
-            />
-          </span>
-        </a>
-      </footer>
+    <div>
+      <p>Hello</p>
     </div>
   );
 };
 
-export default IndexPage;
+export default IndexPopup;
