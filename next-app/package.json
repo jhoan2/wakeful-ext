@@ -9,17 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.8.4",
     "@ceramicnetwork/common": "^2.26.0",
     "@ceramicnetwork/http-client": "^2.23.0",
-    "@composedb/client": "^0.4.4",
+    "@composedb/client": "^0.5.1",
     "@didtools/cacao": "^2.1.0",
     "@didtools/pkh-ethereum": "^0.4.0",
+    "@metamask/providers": "^11.1.1",
     "did-session": "^2.0.1",
+    "get-video-id": "^3.6.5",
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "youtube-caption-extractor": "^1.4.3"
   },
   "devDependencies": {
+    "@composedb/devtools": "^0.5.0",
+    "@composedb/devtools-node": "^0.5.1",
     "autoprefixer": "^10.4.14",
     "eslint": "latest",
     "eslint-config-next": "latest",

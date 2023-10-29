@@ -4,7 +4,33 @@
   "version": "0.0.1",
   "manifest_version": 3,
   "action": {
-    "default_title": "Next.js app",
-    "default_popup": "index.html"
+    "default_title": "Next.js app"
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "host_permissions": [
+    "http://api.com/*",
+    "http://*/",
+    "https://*/"
+  ],
+  "permissions": [
+    "tabs",
+    "tabCapture",
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "sidePanel"
+  ],
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "externally_connectable": {
+    "matches": [
+      "https://metamask.io/*"
+    ],
+    "ids": [
+      "*"
+    ]
   }
 }

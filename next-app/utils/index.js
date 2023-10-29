@@ -3,8 +3,8 @@ import { getResolver } from 'key-did-resolver'
 import { DID } from "dids";
 import { DIDSession } from "did-session";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
-// import { SolanaWebAuth, getAccountIdByNetwork } from '@didtools/pkh-solana'
-// import { StreamID } from "@ceramicnetwork/streamid";
+import { useCeramicContext } from "../context";
+import { createExternalExtensionProvider } from '@metamask/providers';
 
 const DID_SEED_KEY = 'ceramic:did_seed'
 
@@ -25,11 +25,10 @@ export const authenticateCeramic = async (ceramic, compose) => {
   const popup = document.getElementById('popup')
   if (logged_in == "true") {
     if (popup) {
-      popup.classList.add('hidden');
+      popup.style.display = "none"
     }
   }
   let auth_type = localStorage.getItem("ceramic:auth_type")
-  console.log(auth_type)
   if (auth_type == "key") {
     authenticateKeyDID(ceramic, compose)
   }
@@ -76,27 +75,24 @@ const authenticateEthPKH = async (ceramic, compose) => {
   }
 
   if (!session || (session.hasSession && session.isExpired)) {
-    if (window.ethereum === null || window.ethereum === undefined) {
-      throw new Error("No injected Ethereum provider found.");
-    }
-
     // We enable the ethereum provider to get the user's addresses.
-    const ethProvider = window.ethereum;
-    // request ethereum accounts.
-    const addresses = await ethProvider.enable({
-      method: "eth_requestAccounts",
-    });
-    const accountId = await getAccountId(ethProvider, addresses[0])
-    const authMethod = await EthereumWebAuth.getAuthMethod(ethProvider, accountId)
+    let provider = createExternalExtensionProvider();
+    if (!provider) {
+      console.error("MetaMask provider not detected.");
+      throw new Error("MetaMask provider not detected.");
+    }
+    const accounts = await provider.request({ method: 'eth_requestAccounts' });
 
+    const accountId = await getAccountId(provider, accounts[0])
+    const authMethod = await EthereumWebAuth.getAuthMethod(provider, accountId)
     /**
      * Create DIDSession & provide capabilities for resources that we want to access.
      * @NOTE: Any production applications will want to provide a more complete list of capabilities.
      *        This is not done here to allow you to add more datamodels to your application.
      */
-
+    const oneWeek = 60 * 60 * 24 * 7
     // TODO: Switch to explicitly authorized resources. This sets a bad precedent.
-    session = await DIDSession.authorize(authMethod, { resources: compose.resources })
+    session = await DIDSession.authorize(authMethod, { resources: compose.resources, expiresInSecs: oneWeek })
     // Set the session in localStorage.
     localStorage.setItem('ceramic:eth_did', session.serialize());
   }
