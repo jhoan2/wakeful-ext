@@ -604,7 +604,6 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
     }
 
     const injectSyncVideo = (currentTabId) => {
-        console.log(currentTabId)
         const newIntervalId = setInterval(async () => {
             const result = await chrome.scripting.executeScript({
                 target: { tabId: currentTabId },
