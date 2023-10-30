@@ -146,7 +146,6 @@ function MyApp({ Component, pageProps }) {
         target: { tabId: tab.id },
         func: getScrollY,
       })
-      console.log(scrollObj)
       return scrollObj
     }
 

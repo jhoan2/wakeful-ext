@@ -21,6 +21,7 @@ export default function YoutubeCaption({ styles, subtitle, currentTime, currentT
 
 
     return (
+
         <div key={subtitle.start} id={subtitleId} className={styles} onClick={() => injectChangeVideoTime(subtitle)}>
             {subtitle.text}
         </div>

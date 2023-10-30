@@ -24,6 +24,7 @@ export default function YoutubeCaptionsList({ styles, currentTabId, subtitles, c
                     currentTabId={currentTabId}
                 />
             })}
+
         </div>
     )
 }

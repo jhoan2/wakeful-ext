@@ -610,6 +610,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
                 func: syncVideo,
             })
             setCurrentTime(result[0].result)
+            console.log('hi')
             //Even when the video is paused this is still being called
         }, 1000);
         setIntervalId(newIntervalId)
@@ -643,6 +644,16 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
     //     }
     // }
 
+    const showNotesPanel = () => {
+        if (showNotes) {
+            injectSyncVideo(currentTabId)
+        } else {
+            clearInterval(intervalId)
+        }
+        setShowNotes(!showNotes)
+
+    }
+
     useEffect(() => {
         fetchVideoDetails(videoID, lang);
         injectSyncVideo(currentTabId)
@@ -651,9 +662,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
 
     return (
         <div id='subtitle-container'>
-            <button onClick={() => injectSyncVideo(currentTabId)}>Sync Video</button>
-            <button onClick={() => changeStyles()}>Add styles</button>
-            <button onClick={() => setShowNotes(!showNotes)}>{showNotes ? 'Captions' : 'Notes'}</button>
+            <button onClick={() => showNotesPanel()}>{showNotes ? 'Captions' : 'Notes'}</button>
             {showNotes ?
                 <YoutubeNotes /> :
                 <YoutubeCaptionsList
