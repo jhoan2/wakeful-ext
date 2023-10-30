@@ -604,13 +604,13 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
     }
 
     const injectSyncVideo = (currentTabId) => {
+        console.log(currentTabId)
         const newIntervalId = setInterval(async () => {
             const result = await chrome.scripting.executeScript({
                 target: { tabId: currentTabId },
                 func: syncVideo,
             })
             setCurrentTime(result[0].result)
-            console.log('hi')
             //Even when the video is paused this is still being called
         }, 1000);
         setIntervalId(newIntervalId)

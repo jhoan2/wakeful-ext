@@ -45,15 +45,21 @@ function IndexPopup({ loggedIn }) {
   }
 
 
-
   const onPanelOpen = async () => {
-    const tab = await getCurrentTab()
-    setCurrentTab(tab)
+    let tab = await getCurrentTab()
+    //get baseUrl from youtube and articles
     const { id } = getVideoId(tab.url);
+    const hashIndex = tab.url.indexOf('#');
     if (id) {
-      setYoutubeId(id)
+      const baseYoutubeUrl = 'https://www.youtube.com/watch?v=' + id
+      tab.url = baseYoutubeUrl
+    }
+    if (hashIndex > -1) {
+      tab.url = tab.url.substring(0, hashIndex)
     }
 
+    setYoutubeId(id)
+    setCurrentTab(tab)
   }
 
   const toggleDarkMode = () => {
