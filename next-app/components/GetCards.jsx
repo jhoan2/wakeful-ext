@@ -38,8 +38,12 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
   if (data) {
-    const resourceId = data.icarusResourceIndex.edges[0]?.node.cards.edges[0]?.node.resourceId
-    setCurrentResourceId(resourceId)
+    if (data.icarusResourceIndex.edges.length < 1) {
+      return <p>New User</p>
+    } else {
+      const resourceId = data.icarusResourceIndex.edges[0]?.node.cards.edges[0]?.node.resourceId
+      setCurrentResourceId(resourceId)
+    }
   }
 
   return <div className='dark:text-white'>
