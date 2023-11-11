@@ -8,7 +8,7 @@ export default function YoutubeCaptionsList({ styles, currentTabId, subtitles, c
         const currentTimeString = Math.floor(currentTime).toString()
         let currentElement = document.getElementById(currentTimeString)
         if (currentElement) {
-            currentElement.scrollIntoView({ behavior: "smooth" })
+            currentElement.scrollIntoView({ behavior: "smooth", block: 'end' })
             setCurrentElementTime(currentTime)
         }
     }
