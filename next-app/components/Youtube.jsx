@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import YoutubeCaptionsList from './YoutubeCaptionsList';
 import YoutubeNotes from './YoutubeNotes';
+import YoutubeAddNote from './YoutubeAddNote';
 import { getVideoDetails } from 'youtube-caption-extractor';
 
 export default function YoutubeAnnotations({ currentTab, youtubeId }) {
     const [showNotes, setShowNotes] = useState(false)
+    const [openYoutubeAddNote, setYoutubeOpenAddNote] = useState(false)
     const currentTabId = currentTab.id
     const [styles, setStyles] = useState('p-2 m-2 border border-gray-300 rounded-lg hover:bg-gray-100')
     const [intervalId, setIntervalId] = useState('')
@@ -698,6 +700,12 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
                     </button>
                 </div>
             </div>
+            {openYoutubeAddNote ?
+                <div className='border-2 rounded fixed p-6 w-full bg-gray-100'>
+                    <YoutubeAddNote />
+                </div>
+                : null
+            }
             <div id='youtube-panel-content'>
                 {showNotes ?
                     <YoutubeNotes /> :
