@@ -3,6 +3,8 @@ import YoutubeCaptionsList from './YoutubeCaptionsList';
 import YoutubeNotes from './YoutubeNotes';
 import YoutubeAddNote from './YoutubeAddNote';
 import { getVideoDetails } from 'youtube-caption-extractor';
+import { useCeramicContext } from '../context';
+
 
 export default function YoutubeAnnotations({ currentTab, youtubeId, currentResourceId, setCurrentResourceId }) {
     const [showNotes, setShowNotes] = useState(false)
@@ -11,6 +13,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
     const [styles, setStyles] = useState('p-2 m-2 border border-gray-300 rounded-lg hover:bg-gray-100')
     const [intervalId, setIntervalId] = useState('')
     const [currentTime, setCurrentTime] = useState('')
+    const { composeClient } = clients
     const videoID = youtubeId;
     const lang = 'en'; // Optional, default is 'en' (English)
     const [subtitles, setSubtitles] = useState([
@@ -575,7 +578,6 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
             "text": "So from the whole team – Thank you so \nmuch for being with us all these years."
         }
     ]);
-    const [description, setDescription] = useState("")
 
     const fetchVideoDetails = async (videoID, lang = 'en') => {
         console.log('video')
@@ -583,14 +585,12 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
         //     const videoDetails = await getVideoDetails({ videoID, lang });
         //     if (videoDetails) {
         //         console.log(videoDetails.subtitles)
-        //         setDescription(videoDetails.description)
         //         setSubtitles(videoDetails.subtitles)
         //     }
         // } catch (error) {
         //     console.error('Error fetching video details:', error);
         // }
     };
-
 
     // const changeStyles = () => {
     //     setStyles(styles + " font-mono")
@@ -772,7 +772,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
 
     useEffect(() => {
         fetchVideoDetails(videoID, lang);
-        injectSyncVideo(currentTabId)
+        injectSyncVideo(currentTabId);
     }, [])
 
     if (loading) return 'Submitting...';
@@ -827,7 +827,6 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
                         currentTime={currentTime}
                     />}
             </div>
-
         </div>
     )
 }
