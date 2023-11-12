@@ -2,40 +2,11 @@ import React, { useState } from 'react'
 import { gql, useMutation } from '@apollo/client';
 import { useCeramicContext } from '../context';
 
-export default function YoutubeAddNote({ currentTab, youtubeId, currentResourceId, setCurrentResourceId, getScreenshotYoutube, setYoutubeOpenAddNote }) {
+export default function YoutubeAddNote({ currentTab, youtubeId, currentResourceId, setCurrentResourceId, createNewYoutubeResource, setYoutubeOpenAddNote }) {
     const [noteContent, setNoteContent] = useState('')
     const clients = useCeramicContext()
     const { composeClient } = clients
     const currentTabId = currentTab.id
-
-    const createNewYoutubeResource = async () => {
-        const youtubeObj = await getScreenshotYoutube()
-        //youtubeObj = { cid: rootCid }
-        const { cid } = youtubeObj
-        const clientMutationId = composeClient.id
-        const date = new Date().toISOString()
-
-        const res = await fetch('http://localhost:3000/api/createNewYoutubeResource', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                clientMutationId: clientMutationId,
-                url: currentTab.url,
-                title: currentTab.title,
-                createdAt: date,
-                updatedAt: date,
-                cid: cid
-            }),
-        })
-
-        if (!res.ok) {
-            throw new Error('Server responded with an error: ' + res.status);
-        }
-        const data = await res.json();
-        return data.newResourceId.data.createIcarusResource.document.id
-    }
 
     const ADD_NOTE = gql`
     mutation ADD_NOTE($input: CreateCardInput!) {

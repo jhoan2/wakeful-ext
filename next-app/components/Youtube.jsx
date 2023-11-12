@@ -4,7 +4,7 @@ import YoutubeNotes from './YoutubeNotes';
 import YoutubeAddNote from './YoutubeAddNote';
 import { getVideoDetails } from 'youtube-caption-extractor';
 
-export default function YoutubeAnnotations({ currentTab, youtubeId }) {
+export default function YoutubeAnnotations({ currentTab, youtubeId, currentResourceId, setCurrentResourceId }) {
     const [showNotes, setShowNotes] = useState(false)
     const [openYoutubeAddNote, setYoutubeOpenAddNote] = useState(false)
     const currentTabId = currentTab.id
@@ -595,6 +595,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
     // const changeStyles = () => {
     //     setStyles(styles + " font-mono")
     // }
+
     const handleLogout = () => {
         localStorage.setItem("logged_in", "false")
         localStorage.removeItem('ceramic:did_seed')
@@ -629,33 +630,135 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
         setIntervalId(newIntervalId)
     }
 
-    // const getScreenshotYoutube = async () => {
-    //     const { id, url } = currentTab
-    //     if (url.indexOf("youtube.com/watch?v=") === -1) {
-    //         console.log('Not a youtube video')
-    //         return
-    //     }
 
-    //     try {
-    //         const screenshot = await chrome.scripting.executeScript({
-    //             target: { tabId: id },
-    //             func: capture,
-    //         });
-    //         const canvasImageData = screenshot[0].result
+    function capture() {
+        const videoElement = document.querySelector('.html5-main-video');
+        const videoTime = videoElement.currentTime;
+        if (!videoElement) {
+            console.log('no video found')
+            return
+        }
+        let canvas = document.createElement('canvas');
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+        canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL()
+        return { dataUrl: dataUrl, videoTime: videoTime }
+    }
 
-    //         // Create a new blob from the canvas image data.
-    //         const blob = new Blob([canvasImageData], { type: "image/png" });
-    //         const url = URL.createObjectURL(blob)
+    function dataURLtoBlob(dataurl) {
+        var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    }
 
-    //         const image = new Image();
-    //         image.src = canvasImageData;
-    //         document.body.appendChild(image);
+    const getScreenshotYoutube = async () => {
+        const { id, url } = currentTab
+        if (url.indexOf("youtube.com/watch?v=") === -1) {
+            console.log('Not a youtube video')
+            return
+        }
 
+        try {
+            const screenshot = await chrome.scripting.executeScript({
+                target: { tabId: id },
+                func: capture,
+            });
 
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // }
+            const canvasDataUrl = screenshot[0].result.dataUrl
+            const canvasVideoTime = screenshot[0].result.videoTime
+
+            const canvasBlob = dataURLtoBlob(canvasDataUrl)
+
+            let canvasForm = new FormData()
+            const file = new File([canvasBlob], `image.jpg`, { type: 'image/jpeg' });
+            canvasForm.set('canvasFile', file, 'screenshot.jpg')
+
+            const res = await fetch('http://localhost:3000/api/uploadImage', {
+                method: 'POST',
+                body: canvasForm,
+            })
+            if (!res.ok) {
+                throw new Error('Server responded with an error: ' + res.status);
+            }
+            const data = await res.json();
+            //data = {rootCid: rootCid}
+            return { videoTime: canvasVideoTime, cid: data.rootCid }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const createNewYoutubeResource = async () => {
+        const youtubeObj = await getScreenshotYoutube()
+        //youtubeObj = { cid: rootCid }
+        const { cid } = youtubeObj
+        const clientMutationId = composeClient.id
+        const date = new Date().toISOString()
+
+        const res = await fetch('http://localhost:3000/api/createNewYoutubeResource', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                clientMutationId: clientMutationId,
+                url: currentTab.url,
+                title: currentTab.title,
+                createdAt: date,
+                updatedAt: date,
+                cid: cid
+            }),
+        })
+
+        if (!res.ok) {
+            throw new Error('Server responded with an error: ' + res.status);
+        }
+        const data = await res.json();
+        return data.newResourceId.data.createIcarusResource.document.id
+    }
+
+    const ADD_NOTE = gql`
+    mutation ADD_NOTE($input: CreateCardInput!) {
+        createCard(input: $input) {
+          document {
+            id
+          }
+        }
+      }`
+
+    const [addNote, { data, loading, error }] = useMutation(ADD_NOTE, {
+        // onCompleted: () => setOpenAddNote(false)
+        //To do: need to show some notification that it worked here. 
+    });
+
+    const addScreenshotNote = async () => {
+        let newYoutubeResourceId = currentResourceId
+        if (!currentResourceId) {
+            newYoutubeResourceId = await createNewYoutubeResource()
+            setCurrentResourceId(newYoutubeResourceId)
+        }
+
+        const screenshotObj = await getScreenshotYoutube()
+        const { videoTime, cid } = screenshotObj
+
+        addNote({
+            variables: {
+                input: {
+                    content: {
+                        createdAt: date,
+                        updatedAt: date,
+                        resourceId: newYoutubeResourceId,
+                        cid: cid,
+                        // videoTime: videoTime
+                    }
+                }
+            }
+        })
+    }
 
     const showNotesPanel = () => {
         if (showNotes) {
@@ -672,6 +775,8 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
         injectSyncVideo(currentTabId)
     }, [])
 
+    if (loading) return 'Submitting...';
+    if (error) return `Submission error! ${error.message}`;
 
     return (
         <div id='subtitle-container' >
@@ -687,7 +792,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
                     <button type="button" title='Add Note' onClick={() => setYoutubeOpenAddNote(!openYoutubeAddNote)} className="py-3 px-4 inline-flex items-center gap-x-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className='w-3 h-3'><path d="M15 4H5V20H19V8H15V4ZM3 2.9918C3 2.44405 3.44749 2 3.9985 2H16L20.9997 7L21 20.9925C21 21.5489 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5447 3 21.0082V2.9918ZM11 11V8H13V11H16V13H13V16H11V13H8V11H11Z"></path></svg>
                     </button>
-                    <button type="button" title='Youtube Screenshot' onClick={() => getScreenshotYoutube()} className="py-3 px-4 inline-flex items-center gap-x-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
+                    <button type="button" title='Youtube Screenshot' onClick={() => addScreenshotNote()} className="py-3 px-4 inline-flex items-center gap-x-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className='w-3 h-3'>
                             <path d="M9.82843 5L7.82843 7H4V19H20V7H16.1716L14.1716 5H9.82843ZM9 3H15L17 5H21C21.5523 5 22 5.44772 22 6V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V6C2 5.44772 2.44772 5 3 5H7L9 3ZM12 18C8.96243 18 6.5 15.5376 6.5 12.5C6.5 9.46243 8.96243 7 12 7C15.0376 7 17.5 9.46243 17.5 12.5C17.5 15.5376 15.0376 18 12 18ZM12 16C13.933 16 15.5 14.433 15.5 12.5C15.5 10.567 13.933 9 12 9C10.067 9 8.5 10.567 8.5 12.5C8.5 14.433 10.067 16 12 16Z"></path>
                         </svg>
@@ -707,7 +812,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId }) {
                         youtubeId={youtubeId}
                         currentResourceId={currentResourceId}
                         setCurrentResourceId={setCurrentResourceId}
-                        getScreenshotYoutube={getScreenshotYoutube}
+                        createNewYoutubeResource={createNewYoutubeResource}
                         setYoutubeOpenAddNote={setYoutubeOpenAddNote} />
                 </div>
                 : null
