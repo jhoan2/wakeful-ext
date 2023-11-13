@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
-import { useCeramicContext } from "../context";
+import { useEffect, useState } from "react";
+import { useCeramicContext } from "../context/index";
 import { useLazyQuery, gql } from '@apollo/client';
 import GetCards from "../components/GetCards";
-import AddNote from "../components/AddNote";
 import Youtube from "../components/Youtube";
+import Article from "../components/Article";
 import getVideoId from 'get-video-id';
 
 function IndexPopup({ loggedIn }) {
@@ -19,17 +19,6 @@ function IndexPopup({ loggedIn }) {
     // `tab` will either be a `tabs.Tab` instance or `undefined`.
     let [tab] = await chrome.tabs.query(queryOptions);
     return tab;
-  }
-
-  const handleLogout = () => {
-    localStorage.setItem("logged_in", "false")
-    localStorage.removeItem('ceramic:did_seed')
-    localStorage.removeItem('ceramic:eth_did')
-    localStorage.removeItem('did')
-    localStorage.removeItem('ceramic:auth_type')
-    window.location.reload();
-    console.log('logged out')
-
   }
 
   function capture() {
@@ -56,12 +45,10 @@ function IndexPopup({ loggedIn }) {
       const baseYoutubeUrl = 'https://www.youtube.com/watch?v=' + id
       tab.url = baseYoutubeUrl
       setCurrentTab(tab)
-
     }
     if (hashIndex > -1) {
       tab.url = tab.url.substring(0, hashIndex)
       setCurrentTab(tab)
-
     }
 
     setYoutubeId(id)
@@ -76,12 +63,6 @@ function IndexPopup({ loggedIn }) {
     }
     window.location.reload();
   }
-
-  const refresh = () => {
-    window.location.reload();
-  }
-
-
 
 
   useEffect(() => {
@@ -98,21 +79,9 @@ function IndexPopup({ loggedIn }) {
 
   return (
     <div className="dark:bg-gray-800 h-screen">
-      <div className="dark:text-white flex space-x-4">
-        <button onClick={() => setOpenAddNote(!openAddNote)}>Add Note</button>
-        <button onClick={() => refresh()}>Refresh</button>
-        <button onClick={() => toggleDarkMode()}>Dark Mode</button>
-        <button onClick={() => handleLogout()}>Logout</button>
-      </div>
-      {openAddNote ?
-        <div className='border-2 rounded relative p-6 m-2'>
-          <AddNote currentResourceId={currentResourceId} currentTabId={currentTab.id} setOpenAddNote={setOpenAddNote} />
-        </div>
-        : null
-      }
       {youtubeId ?
-        <Youtube currentTab={currentTab} youtubeId={youtubeId} />
-        : <GetCards currentTab={currentTab} setCurrentResourceId={setCurrentResourceId} />
+        <Youtube currentTab={currentTab} youtubeId={youtubeId} currentResourceId={currentResourceId} setCurrentResourceId={setCurrentResourceId} />
+        : <Article currentTab={currentTab} setCurrentResourceId={setCurrentResourceId} currentResourceId={currentResourceId} />
       }
     </div>
   );
