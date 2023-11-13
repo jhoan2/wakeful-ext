@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { gql, useMutation } from '@apollo/client';
 import { useCeramicContext } from '../context';
 
-export default function AddNote({ currentResourceId, setCurrentResourceId, currentTab, setOpenAddNote, youtubeId }) {
+export default function AddNote({ currentResourceId, setCurrentResourceId, currentTab, setOpenAddNote }) {
     const [noteContent, setNoteContent] = useState('')
     const clients = useCeramicContext()
     const { composeClient } = clients
@@ -48,65 +48,32 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
         return new Blob([u8arr], { type: mime });
     }
 
-    function getNewResourceData({ youtubeId }) {
+    function getNewResourceData() {
         let thumbnailImgSrc
-        //if it's a youtube video, create a canvas img and return the data url. 
-        if (!youtubeId) {
-            //get a node list of all imgs
-            const imgsArr = document.querySelectorAll('img')
-
-            //return the first one that has an aspect ratio of 16/9
-            for (const img of imgsArr) {
-                if ((img.naturalWidth / img.naturalHeight) === 16 / 9) {
-                    thumbnailImgSrc = img.src
-                    break;
-                }
+        const imgsArr = document.querySelectorAll('img')
+        for (const img of imgsArr) {
+            if ((img.naturalWidth / img.naturalHeight) === 16 / 9) {
+                thumbnailImgSrc = img.src
+                break;
             }
-
-        } else {
-            const videoElement = document.querySelector('.html5-main-video');
-            let canvas = document.createElement('canvas');
-            canvas.width = videoElement.videoWidth;
-            canvas.height = videoElement.videoHeight;
-            canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL()
-            return { dataUrl: dataUrl }
         }
+
+        if (!thumbnailImgSrc) {
+            let nodeList = document.querySelectorAll('meta[property="og:image"]');
+            thumbnailImgSrc = nodeList[0].content
+        }
+
         return { thumbnailImgSrc: thumbnailImgSrc }
     }
 
     const createNewResource = async () => {
-        if (!youtubeId) {
-            youtubeId = ''
-        }
-
         const result = await chrome.scripting.executeScript({
             target: { tabId: currentTabId },
             func: getNewResourceData,
-            args: [youtubeId]
         })
         const clientMutationId = composeClient.id
         const resultObj = result[0].result
-        // { dataUrl: dataUrl } or { thumbnailImgSrc: thumbnailImgSrc }
-        let cid
-
-        if (resultObj.dataUrl) {
-            const canvasBlob = dataURLtoBlob(resultObj.dataUrl)
-            let canvasForm = new FormData()
-            const file = new File([canvasBlob], `image.jpg`, { type: 'image/jpeg' });
-            canvasForm.set('canvasFile', file, 'screenshot.jpg')
-
-            const res = await fetch('http://localhost:3000/api/uploadImage', {
-                method: 'POST',
-                body: canvasForm,
-            })
-            if (!res.ok) {
-                throw new Error('Server responded with an error: ' + res.status);
-            }
-            const data = await res.json();
-            console.log('data', data)
-            cid = data.rootCid
-        }
+        // { thumbnailImgSrc: thumbnailImgSrc }
 
         const res = await fetch('http://localhost:3000/api/createNewResource', {
             method: 'POST',
@@ -120,7 +87,6 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
                 title: currentTab.title,
                 createdAt: date,
                 updatedAt: date,
-                cid: cid
             }),
         })
 
@@ -128,22 +94,21 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
             throw new Error('Server responded with an error: ' + res.status);
         }
         const data = await res.json();
-        //return data.newResourceObj.data.createIcarusResource.document.id
-
-        return data
+        return data.newResourceId.data.createIcarusResource.document.id
     }
 
     if (loading) return 'Submitting...';
     if (error) return `Submission error! ${error.message}`;
 
     const saveNote = async () => {
+        let newArticleResourceId = currentResourceId
 
         //if no resource yet, create one first 
         if (!currentResourceId) {
-            const newResourceObj = createNewResource();
-            setCurrentResourceId(newResourceObj.newResourceObj.data.createIcarusResource.document.id)
+            newArticleResourceId = await createNewResource();
+            setCurrentResourceId(newArticleResourceId)
         }
-        console.log('created resource!')
+
         //change the name of this and return an object that you destructure and put into the input. 
         const contentObj = await getContent();
         const scrollY = contentObj.scrollY;
@@ -155,7 +120,7 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
                     content: {
                         createdAt: date,
                         updatedAt: date,
-                        resourceId: currentResourceId,
+                        resourceId: newArticleResourceId,
                         annotation: noteContent,
                         pageYOffset: scrollY
                     }
@@ -165,8 +130,6 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
         setNoteContent('')
         setOpenAddNote(false)
     }
-    //if data would I then add the marker here? 
-
 
     return (
         <div className='flex flex-col pt-2'>
