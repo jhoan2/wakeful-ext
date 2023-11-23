@@ -4,7 +4,7 @@ import YoutubeNotes from './YoutubeNotes';
 import YoutubeAddNote from './YoutubeAddNote';
 import { getVideoDetails } from 'youtube-caption-extractor';
 import { useCeramicContext } from '../context';
-
+import SkeletonYoutubeCaptions from './SkeletonYoutubeCaptions';
 
 export default function YoutubeAnnotations({ currentTab, youtubeId, currentResourceId, setCurrentResourceId }) {
     const [showNotes, setShowNotes] = useState(false)
@@ -13,6 +13,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
     const [styles, setStyles] = useState('p-2 m-2 border border-gray-300 rounded-lg hover:bg-gray-100')
     const [intervalId, setIntervalId] = useState('')
     const [currentTime, setCurrentTime] = useState('')
+    const [loadingCaptions, setLoadingCaptions] = useState(false)
     const { composeClient } = clients
     const videoID = youtubeId;
     const lang = 'en'; // Optional, default is 'en' (English)
@@ -818,14 +819,29 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
                 : null
             }
             <div id='youtube-panel-content'>
-                {showNotes ?
-                    <YoutubeNotes /> :
-                    <YoutubeCaptionsList
-                        subtitles={subtitles}
-                        styles={styles}
-                        currentTabId={currentTab.id}
-                        currentTime={currentTime}
-                    />}
+                {
+                    !showNotes ? (
+                        loadingCaptions ? (
+                            <div>
+                                <SkeletonYoutubeCaptions />
+                                <SkeletonYoutubeCaptions />
+                                <SkeletonYoutubeCaptions />
+                                <SkeletonYoutubeCaptions />
+                                <SkeletonYoutubeCaptions />
+                                <SkeletonYoutubeCaptions />
+                            </div>
+                        ) : (
+                            <YoutubeCaptionsList
+                                subtitles={subtitles}
+                                currentTabId={currentTab.id}
+                                currentTime={currentTime}
+                            />
+                        )
+                    ) : (
+                        <YoutubeNotes
+                            currentTab={currentTab}
+                        />
+                    )}
             </div>
         </div>
     )
