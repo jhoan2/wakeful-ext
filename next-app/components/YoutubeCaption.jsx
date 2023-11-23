@@ -22,7 +22,7 @@ export default function YoutubeCaption({ styles, subtitle, currentTime, currentT
 
     return (
 
-        <div key={subtitle.start} id={subtitleId} className={styles} onClick={() => injectChangeVideoTime(subtitle)}>
+        <div key={subtitle.start} id={subtitleId} className={`p-2 m-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-lg max-w-md `} onClick={() => injectChangeVideoTime(subtitle)}>
             {subtitle.text}
         </div>
     )
