@@ -18,9 +18,12 @@ module.exports = {
       'pink': colors.fuchsia,
       'green': colors.emerald,
       'yellow': colors.yellow,
-      'gray': colors.slate,
+      'gray': colors.gray,
+      'slate': colors.slate,
       'red': colors.red,
-      'white': colors.white
+      'white': colors.white,
+      'amber': colors.amber,
+      'orange': colors.orange
     },
     extend: {},
   },
