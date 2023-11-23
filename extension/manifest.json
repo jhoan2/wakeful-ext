@@ -32,5 +32,11 @@
     "ids": [
       "*"
     ]
+  },
+  "icons": {
+    "16": "./next-assets/icon16.png",
+    "32": "./next-assets/icon32.png",
+    "48": "./next-assets/icon48.png",
+    "128": "./next-assets/icon128.png"
   }
 }
