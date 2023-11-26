@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { gql, useMutation } from '@apollo/client';
-import { useCeramicContext } from '../context';
 import AddNote from './AddNote';
+import GetCards from './GetCards'
 
 export default function Article({ currentTab, setCurrentResourceId, currentResourceId }) {
     const [openAddNote, setOpenAddNote] = useState(false)
@@ -19,26 +18,10 @@ export default function Article({ currentTab, setCurrentResourceId, currentResou
         window.location.reload();
     }
 
-    function getOpenGraphTags() {
-        let tags = document.querySelectorAll('meta[property="og:image"]');
-        console.log(tags)
-        return
-    }
-
-    const injectFunc = async () => {
-        const result = await chrome.scripting.executeScript({
-            target: { tabId: currentTab.id },
-            func: getOpenGraphTags,
-        })
-    }
-
     return (
         <div>
             <div id='article-panel-menu' className='flex justify-center my-5'>
-                <div className='fixed top-0'>
-                    <button type="button" title='Add Note' onClick={() => injectFunc()} className="py-3 px-4 inline-flex items-center gap-x-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
-                        Click
-                    </button>
+                <div className='fixed top-0 z-20'>
                     <button type="button" title='Add Note' onClick={() => setOpenAddNote(!openAddNote)} className="py-3 px-4 inline-flex items-center gap-x-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className='w-3 h-3'><path d="M15 4H5V20H19V8H15V4ZM3 2.9918C3 2.44405 3.44749 2 3.9985 2H16L20.9997 7L21 20.9925C21 21.5489 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5447 3 21.0082V2.9918ZM11 11V8H13V11H16V13H13V16H11V13H8V11H11Z"></path></svg>
                     </button>
@@ -60,6 +43,7 @@ export default function Article({ currentTab, setCurrentResourceId, currentResou
                 </div>
                 : null
             }
+            <GetCards currentTab={currentTab} />
         </div>
     )
 }
