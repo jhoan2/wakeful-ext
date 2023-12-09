@@ -32,7 +32,7 @@ function MyApp({ Component, pageProps }) {
 
 
   const addContextMenu = () => {
-    function getScrollY() {
+    function getScrollYAndHighlight() {
 
       // Used to group all the spans that were highlighted together.
       const generateId = () => {
@@ -139,10 +139,10 @@ function MyApp({ Component, pageProps }) {
       }
     }
 
-    const getCurrentScrollPosition = async (tab) => {
+    const injectGetScrollYAndHighlight = async (tab) => {
       const scrollObj = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: getScrollY,
+        func: getScrollYAndHighlight,
       })
       return scrollObj
     }
@@ -223,25 +223,8 @@ function MyApp({ Component, pageProps }) {
       }
 
       if (resource?.data.icarusResourceIndex.edges.length === 0) {
-        const newResourceId = await composeClient.executeQuery(`
-        mutation {
-          createIcarusResource(
-            input: {content: {
-              url: "${tab.url}", 
-              title: "${tab.title}", 
-              createdAt: "${new Date().toISOString()}", 
-              updatedAt: "${new Date().toISOString()}"}}
-          ) {
-            document {
-              id
-            }
-          }
-        }
-      `);
-        if (newResourceId.errors) {
-          console.log(`error: ${newResourceId.errors[0].message}. There was a problem creating a resource`)
-          return
-        }
+        const newResourceId = await createNewResource(tab, clientMutationId);
+        //Might need to show an error here.
         resourceId = newResourceId
       } else {
         resourceId = resource.data.icarusResourceIndex.edges[0].node.id
