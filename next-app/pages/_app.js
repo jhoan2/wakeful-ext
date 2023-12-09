@@ -147,6 +147,48 @@ function MyApp({ Component, pageProps }) {
       return scrollObj
     }
 
+    const createNewResource = async (tab, clientMutationId) => {
+      const res = await fetch('http://localhost:3000/api/createNewResource', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          clientMutationId: clientMutationId,
+          url: tab.url,
+          title: tab.title,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }),
+      })
+
+      if (!res.ok) {
+        throw new Error('Server responded with an error: ' + res.status);
+      }
+      const data = await res.json();
+      console.log(data)
+      return data.newResourceId.data?.createIcarusResource.document.id
+    }
+
+    const fetchImgSrc = async (imgUrl) => {
+      const res = await fetch('http://localhost:3000/api/saveImgUrl', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imgUrl: imgUrl,
+        }),
+      })
+
+      if (!res.ok) {
+        throw new Error('Server responded with an error: ' + res.status);
+      }
+
+      const data = await res.json();
+      return data.rootCid
+    }
+
     const contextMenuItem = {
       id: "save-to-wakeful",
       title: "Save to Wakeful",
