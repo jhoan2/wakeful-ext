@@ -230,6 +230,19 @@ function MyApp({ Component, pageProps }) {
         resourceId = resource.data.icarusResourceIndex.edges[0].node.id
       }
 
+      const { srcUrl, selectionText, pageUrl } = info
+      const date = new Date().toISOString()
+
+      //if there is an image url, save it to pinata and get the cid
+      if (srcUrl) {
+        cid = await fetchImgSrc(srcUrl)
+      } else {
+        const location = await injectGetScrollYAndHighlight(tab)
+        const scrollObj = location[0].result
+        scrollY = parseInt(scrollObj.scrollY)
+        scrollHeight = parseInt(scrollObj.scrollHeight)
+      }
+
       let input = {
         createdAt: date,
         updatedAt: date,
