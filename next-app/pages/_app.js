@@ -9,6 +9,7 @@ import { ApolloClient, ApolloLink, InMemoryCache, Observable, ApolloProvider } f
 function MyApp({ Component, pageProps }) {
   const clients = useCeramicContext()
   const { ceramic, composeClient } = clients
+  const [loggedIn, setLoggedIn] = useState(false)
   const link = new ApolloLink((operation) => {
     return new Observable((observer) => {
       composeClient.execute(operation.query, operation.variables).then(
@@ -284,24 +285,15 @@ function MyApp({ Component, pageProps }) {
     });
   }
 
-
   // Update to include refresh on auth. this means I need to refresh the page when the user logs in. 
   useEffect(() => {
     if (localStorage.getItem('logged_in')) {
       handleLogin()
     }
 
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-
-    const popup = document.getElementById('popup')
-    if (popup.style.display === "none") {
-      //change the logo here
-      setLoggedIn(true)
+    if (localStorage.getItem('ceramic:eth_did')) {
       addContextMenu()
+      setLoggedIn(true)
     }
   }, [])
 
@@ -315,6 +307,7 @@ function MyApp({ Component, pageProps }) {
             <div>
               <Component
                 {...pageProps}
+                loggedIn={loggedIn}
               />
             </div>
           </CeramicWrapper>
