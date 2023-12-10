@@ -5,14 +5,15 @@ import GetCards from "../components/GetCards";
 import Youtube from "../components/Youtube";
 import Article from "../components/Article";
 import getVideoId from 'get-video-id';
+import Profile from "../components/Profile";
 
-function IndexPopup() {
+function IndexPopup({ loggedIn }) {
   const clients = useCeramicContext()
   const { ceramic, composeClient } = clients
-  const [currentTab, setCurrentTab] = useState({})
   const [currentResourceId, setCurrentResourceId] = useState('')
+  const [currentTab, setCurrentTab] = useState({})
   const [youtubeId, setYoutubeId] = useState('')
-  const [openAddNote, setOpenAddNote] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
 
   const getCurrentTab = async () => {
     let queryOptions = { active: true, lastFocusedWindow: true };
@@ -54,16 +55,6 @@ function IndexPopup() {
     setYoutubeId(id)
   }
 
-  const toggleDarkMode = () => {
-    if (localStorage.getItem("theme") === "dark") {
-      localStorage.removeItem("theme")
-    } else {
-      localStorage.setItem("theme", "dark");
-
-    }
-    window.location.reload();
-  }
-
 
   useEffect(() => {
     onPanelOpen()
@@ -71,9 +62,6 @@ function IndexPopup() {
 
 
   //will have to connect to cache here too 
-  //on creating the cards it will have to add the marker to the dom 
-  //refresh
-
   //think making a query for the cards will have to be here and so set the existing resource here 
 
 
