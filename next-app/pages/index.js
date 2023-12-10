@@ -78,10 +78,27 @@ function IndexPopup() {
 
 
   return (
-    <div className="dark:bg-gray-800 h-screen">
-      {youtubeId ?
-        <Youtube currentTab={currentTab} youtubeId={youtubeId} currentResourceId={currentResourceId} setCurrentResourceId={setCurrentResourceId} />
-        : <Article currentTab={currentTab} setCurrentResourceId={setCurrentResourceId} currentResourceId={currentResourceId} />
+    <div className="dark:bg-gray-800 h-screen flex justify-center items-center">
+      {loggedIn || showProfile ?
+        (
+          youtubeId ?
+            <Youtube
+              currentTab={currentTab}
+              youtubeId={youtubeId}
+              currentResourceId={currentResourceId}
+              setCurrentResourceId={setCurrentResourceId}
+              showProfile={showProfile}
+              setShowProfile={setShowProfile} />
+            :
+            <Article
+              currentTab={currentTab}
+              setCurrentResourceId={setCurrentResourceId}
+              currentResourceId={currentResourceId}
+              showProfile={showProfile}
+              setShowProfile={setShowProfile} />
+        )
+        :
+        <Profile />
       }
     </div>
   );
