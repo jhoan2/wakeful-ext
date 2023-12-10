@@ -9,7 +9,6 @@ import { ApolloClient, ApolloLink, InMemoryCache, Observable, ApolloProvider } f
 function MyApp({ Component, pageProps }) {
   const clients = useCeramicContext()
   const { ceramic, composeClient } = clients
-  const [loggedIn, setLoggedIn] = useState(false)
   const link = new ApolloLink((operation) => {
     return new Observable((observer) => {
       composeClient.execute(operation.query, operation.variables).then(
@@ -314,7 +313,9 @@ function MyApp({ Component, pageProps }) {
         <div>
           <CeramicWrapper>
             <div>
-              <Component {...pageProps} loggedIn={loggedIn} />
+              <Component
+                {...pageProps}
+              />
             </div>
           </CeramicWrapper>
         </div>

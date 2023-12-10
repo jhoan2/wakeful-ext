@@ -6,7 +6,7 @@ import Youtube from "../components/Youtube";
 import Article from "../components/Article";
 import getVideoId from 'get-video-id';
 
-function IndexPopup({ loggedIn }) {
+function IndexPopup() {
   const clients = useCeramicContext()
   const { ceramic, composeClient } = clients
   const [currentTab, setCurrentTab] = useState({})
