@@ -598,7 +598,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
     // }
 
     const handleLogout = () => {
-        localStorage.setItem("logged_in", "false")
+        localStorage.removeItemItem("logged_in")
         localStorage.removeItem('ceramic:did_seed')
         localStorage.removeItem('ceramic:eth_did')
         localStorage.removeItem('did')

@@ -5,7 +5,7 @@ import GetCards from './GetCards'
 export default function Article({ currentTab, setCurrentResourceId, currentResourceId }) {
     const [openAddNote, setOpenAddNote] = useState(false)
     const handleLogout = () => {
-        localStorage.setItem("logged_in", "false")
+        localStorage.removeItem("logged_in")
         localStorage.removeItem('ceramic:did_seed')
         localStorage.removeItem('ceramic:eth_did')
         localStorage.removeItem('did')
