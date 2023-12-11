@@ -197,12 +197,13 @@ function MyApp({ Component, pageProps }) {
     chrome.contextMenus.create(contextMenuItem);
 
     chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-      const location = await getCurrentScrollPosition(tab)
-      const scrollObj = location[0].result
-      const scrollY = parseInt(scrollObj.scrollY)
-      const scrollHeight = parseInt(scrollObj.scrollHeight)
-      const { srcUrl, selectionText } = info
-      const date = new Date().toISOString()
+      //if no ceramic did that means user is not logged in
+      if (ceramic.did === undefined) {
+        chrome.action.setIcon({ path: "/next-assets/icon-logged-out16.png" });
+        return
+      }
+
+      const clientMutationId = composeClient.id
       const resource = await composeClient.executeQuery(`
           query {
             icarusResourceIndex(first: 2, filters:{ where: { url: { equalTo: "${tab.url}" }}}) {
