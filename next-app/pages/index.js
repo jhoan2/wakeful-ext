@@ -71,7 +71,7 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
   }
 
   return (
-    <div className="dark:bg-gray-800 h-screen flex justify-center items-center">
+    <div className="dark:bg-gray-800 h-screen">
       {
         youtubeId ?
           <Youtube

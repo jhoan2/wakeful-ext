@@ -10,7 +10,7 @@ export default function Article({ currentTab, setCurrentResourceId, currentResou
     }
 
     return (
-        <div>
+        <div className='w-full'>
             <div id='article-panel-menu' className='flex justify-center my-5'>
                 <div className='fixed top-0 z-20'>
                     <button type="button" title='Add Note' onClick={() => setOpenAddNote(!openAddNote)} className="py-3 px-4 inline-flex items-center gap-x-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
