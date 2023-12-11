@@ -3,7 +3,6 @@ import { CeramicWrapper } from "../context/index";
 import React, { useState, useEffect } from "react";
 import { useCeramicContext } from '../context/index';
 import { authenticateCeramic } from '../utils';
-import AuthPrompt from "../components/did-select-popup";
 import { ApolloClient, ApolloLink, InMemoryCache, Observable, ApolloProvider } from '@apollo/client';
 
 function MyApp({ Component, pageProps }) {
@@ -308,6 +307,7 @@ function MyApp({ Component, pageProps }) {
               <Component
                 {...pageProps}
                 loggedIn={loggedIn}
+                setLoggedIn={setLoggedIn}
               />
             </div>
           </CeramicWrapper>

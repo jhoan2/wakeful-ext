@@ -7,13 +7,13 @@ import Article from "../components/Article";
 import getVideoId from 'get-video-id';
 import Profile from "../components/Profile";
 
-function IndexPopup({ loggedIn }) {
+function IndexPopup({ loggedIn, setLoggedIn }) {
   const clients = useCeramicContext()
   const { ceramic, composeClient } = clients
   const [currentResourceId, setCurrentResourceId] = useState('')
   const [currentTab, setCurrentTab] = useState({})
   const [youtubeId, setYoutubeId] = useState('')
-  const [showProfile, setShowProfile] = useState(false)
+  const [showProfile, setShowProfile] = useState(true)
 
   const getCurrentTab = async () => {
     let queryOptions = { active: true, lastFocusedWindow: true };
@@ -55,7 +55,6 @@ function IndexPopup({ loggedIn }) {
     setYoutubeId(id)
   }
 
-
   useEffect(() => {
     onPanelOpen()
   }, [])
@@ -63,11 +62,19 @@ function IndexPopup({ loggedIn }) {
 
   //will have to connect to cache here too 
   //think making a query for the cards will have to be here and so set the existing resource here 
-
+  if (!loggedIn) {
+    return (
+      <div className="dark:bg-gray-800 h-screen flex justify-center items-center">
+        <Profile
+          loggedIn={loggedIn}
+          setLoggedIn={setLoggedIn} />
+      </div>
+    )
+  }
 
   return (
     <div className="dark:bg-gray-800 h-screen flex justify-center items-center">
-      {loggedIn || showProfile ?
+      {showProfile ?
         (
           youtubeId ?
             <Youtube
@@ -75,18 +82,20 @@ function IndexPopup({ loggedIn }) {
               youtubeId={youtubeId}
               currentResourceId={currentResourceId}
               setCurrentResourceId={setCurrentResourceId}
-              showProfile={showProfile}
-              setShowProfile={setShowProfile} />
+              loggedIn={loggedIn}
+              setLoggedIn={setLoggedIn} />
             :
             <Article
               currentTab={currentTab}
               setCurrentResourceId={setCurrentResourceId}
               currentResourceId={currentResourceId}
-              showProfile={showProfile}
-              setShowProfile={setShowProfile} />
+              loggedIn={loggedIn}
+              setLoggedIn={setLoggedIn} />
         )
         :
-        <Profile />
+        <Profile
+          loggedIn={loggedIn}
+          setLoggedIn={setLoggedIn} />
       }
     </div>
   );
