@@ -33,13 +33,14 @@ export default function Profile() {
         localStorage.removeItem('did')
         localStorage.removeItem('ceramic:auth_type')
         window.location.reload();
-        console.log('logged out')
     }
 
-    const handleEthPkh = () => {
+    const handleEthPkh = async () => {
         localStorage.setItem("ceramic:auth_type", "eth");
-        // setIsVisible(false);
-        authenticateCeramic(ceramic, composeClient)
+        const res = await authenticateCeramic(ceramic, composeClient);
+        if (res) {
+            window.location.reload();
+        }
     };
 
     useEffect(() => {

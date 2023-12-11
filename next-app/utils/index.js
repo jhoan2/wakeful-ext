@@ -21,21 +21,15 @@ const DID_SEED_KEY = 'ceramic:did_seed'
  * @returns Promise<DID-Session> - The User's authenticated sesion.
  */
 export const authenticateCeramic = async (ceramic, compose) => {
-  let logged_in = localStorage.getItem('logged_in')
-  const popup = document.getElementById('popup')
-  if (logged_in == "true") {
-    if (popup) {
-      popup.style.display = "none"
-    }
-  }
   let auth_type = localStorage.getItem("ceramic:auth_type")
   if (auth_type == "key") {
-    authenticateKeyDID(ceramic, compose)
+    await authenticateKeyDID(ceramic, compose)
   }
   if (auth_type == "eth") {
-    authenticateEthPKH(ceramic, compose)
+    await authenticateEthPKH(ceramic, compose)
   }
   localStorage.setItem('logged_in', "true");
+  return true
 }
 
 const authenticateKeyDID = async (ceramic, compose) => {
@@ -100,5 +94,5 @@ const authenticateEthPKH = async (ceramic, compose) => {
   // Set our Ceramic DID to be our session DID.
   compose.setDID(session.did)
   ceramic.did = session.did
-  return
+  return true
 }
