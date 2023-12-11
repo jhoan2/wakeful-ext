@@ -65,37 +65,29 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
   if (!loggedIn) {
     return (
       <div className="dark:bg-gray-800 h-screen flex justify-center items-center">
-        <Profile
-          loggedIn={loggedIn}
-          setLoggedIn={setLoggedIn} />
+        <Profile />
       </div>
     )
   }
 
   return (
     <div className="dark:bg-gray-800 h-screen flex justify-center items-center">
-      {showProfile ?
-        (
-          youtubeId ?
-            <Youtube
-              currentTab={currentTab}
-              youtubeId={youtubeId}
-              currentResourceId={currentResourceId}
-              setCurrentResourceId={setCurrentResourceId}
-              loggedIn={loggedIn}
-              setLoggedIn={setLoggedIn} />
-            :
-            <Article
-              currentTab={currentTab}
-              setCurrentResourceId={setCurrentResourceId}
-              currentResourceId={currentResourceId}
-              loggedIn={loggedIn}
-              setLoggedIn={setLoggedIn} />
-        )
-        :
-        <Profile
-          loggedIn={loggedIn}
-          setLoggedIn={setLoggedIn} />
+      {
+        youtubeId ?
+          <Youtube
+            currentTab={currentTab}
+            youtubeId={youtubeId}
+            currentResourceId={currentResourceId}
+            setCurrentResourceId={setCurrentResourceId}
+            loggedIn={loggedIn}
+            setLoggedIn={setLoggedIn} />
+          :
+          <Article
+            currentTab={currentTab}
+            setCurrentResourceId={setCurrentResourceId}
+            currentResourceId={currentResourceId}
+            loggedIn={loggedIn}
+            setLoggedIn={setLoggedIn} />
       }
     </div>
   );

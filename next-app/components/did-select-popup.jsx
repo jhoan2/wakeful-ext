@@ -19,7 +19,6 @@ const AuthPrompt = () => {
         authenticateCeramic(ceramic, composeClient)
     };
 
-
     return (
         <div>
             {
