@@ -196,10 +196,12 @@ function MyApp({ Component, pageProps }) {
 
     chrome.contextMenus.create(contextMenuItem);
 
+
+
     chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+
       //if no ceramic did that means user is not logged in
       if (ceramic.did === undefined) {
-        chrome.action.setIcon({ path: "/next-assets/icon-logged-out16.png" });
         return
       }
 
@@ -286,13 +288,14 @@ function MyApp({ Component, pageProps }) {
   }
 
   // Update to include refresh on auth. this means I need to refresh the page when the user logs in. 
-
   useEffect(() => {
     if (localStorage.getItem('logged_in')) {
       handleLogin()
       addContextMenu()
     } else {
       setLoggedIn(false)
+      //remove the context menu if the user is not logged in
+      chrome.contextMenus.remove("save-to-wakeful")
     }
 
   }, [])
