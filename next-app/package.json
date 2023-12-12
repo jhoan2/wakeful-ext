@@ -16,6 +16,10 @@
     "@didtools/cacao": "^2.1.0",
     "@didtools/pkh-ethereum": "^0.4.0",
     "@metamask/providers": "^11.1.1",
+    "@tiptap/extension-bubble-menu": "^2.1.13",
+    "@tiptap/pm": "^2.1.13",
+    "@tiptap/react": "^2.1.13",
+    "@tiptap/starter-kit": "^2.1.13",
     "did-session": "^2.0.1",
     "get-video-id": "^3.6.5",
     "next": "latest",
@@ -26,6 +30,7 @@
   "devDependencies": {
     "@composedb/devtools": "^0.5.0",
     "@composedb/devtools-node": "^0.5.1",
+    "@tailwindcss/typography": "^0.5.10",
     "autoprefixer": "^10.4.14",
     "eslint": "latest",
     "eslint-config-next": "latest",
