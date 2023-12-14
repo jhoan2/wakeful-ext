@@ -62,9 +62,12 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
 
 
   return <div className='dark:text-white'>
-    {data ? <CardList data={cards} currentTab={currentTab} /> : null}
-    {/* <div>Something</div>
-    <button onClick={() => loadMore()}>More</button> */}
+    {data ?
+      <CardList data={cards} currentTab={currentTab} /> :
+      <div className='h-screen flex justify-center items-center'>
+        <NoContent />
+      </div>
+    }
   </div>
 
 }
