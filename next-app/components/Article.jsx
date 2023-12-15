@@ -25,7 +25,7 @@ export default function Article({ currentTab, setCurrentResourceId, currentResou
                 </div>
             </div>
             {openAddNote ?
-                <div className='border-2 rounded fixed p-4 w-full bg-gray-100'>
+                <div className='border-2 rounded fixed p-4 w-full bg-gray-100 z-10'>
                     <AddNote
                         currentTab={currentTab}
                         currentResourceId={currentResourceId}
