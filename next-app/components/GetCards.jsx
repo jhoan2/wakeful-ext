@@ -4,31 +4,38 @@ import CardList from './CardList'
 import { useCeramicContext } from '../context';
 import ErrorPage from './ErrorPage';
 import SkeletonCard from './SkeletonCard';
+import NoContent from './NoContent';
 
 export default function CardNotes({ currentTab, setCurrentResourceId }) {
   const currentUrl = currentTab.url
   const clients = useCeramicContext()
-  const { composeClient } = clients
+  const { ceramic, composeClient } = clients
   const clientMutationId = composeClient.id
 
   const GET_CARDS_PER_URL_PER_USER = gql`
-  query MyQuery ($url: String!, $account: ID, $after: String) {
-    icarusResourceIndex(filters: {where: {url: {equalTo: $url}}}, first: 1) {
-      edges {
-        node {
-          cards(account: $account, filters: {where: {deleted: {equalTo: false}}}, first: 10, after: $after) {
-            edges {
-              node {
-                annotation
-                cid
-                id
-                resourceId
-                scrollHeight
-                pageYOffset
-                videoTime
-                quote
-              }
+  query GetCardsPerUrlPerUser ($url: String, $clientMutationId: ID!, $cursor: String) {
+    node(id: $clientMutationId) {
+      ... on CeramicAccount {
+        cardList(
+          filters: {where: {deleted: {equalTo: false}, url: {equalTo: $url}}}
+          first: 1
+          after: $cursor
+          ) {
+          edges {
+            node {
+              annotation
+              id
+              cid
+              createdAt
+              pageYOffset
+              scrollHeight
+              updatedAt
+              videoTime
             }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
       }
@@ -37,29 +44,24 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
   `
 
   const { loading, error, data, fetchMore } = useQuery(GET_CARDS_PER_URL_PER_USER, {
-    variables: { url: currentUrl, account: clientMutationId, after: null },
-    skip: !currentUrl
+    variables: { url: currentUrl, clientMutationId: clientMutationId }
   });
 
   if (loading) return <SkeletonCard />
   if (error) return <ErrorPage message={error.message} />;
-  const cards = data?.icarusResourceIndex.edges[0]?.node.cards
 
+  const cards = data.node?.cardList.edges
+  const pageInfo = data.node?.cardList.pageInfo
   const loadMore = () => {
-    // if (cards.pageInfo.hasNextPage) {
-    //   fetchMore({
-    //     variables: {
-    //       after: cards.pageInfo.endCursor,
-    //     },
-    //   })
-    //   console.log(cards)
-    // }
+    if (pageInfo.hasNextPage) {
+      fetchMore({
+        variables: {
+          cursor: pageInfo.endCursor,
+        },
+      })
+    }
     console.log(cards)
-
   }
-
-
-
 
   return <div className='dark:text-white'>
     {data ?
@@ -68,6 +70,7 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
         <NoContent />
       </div>
     }
+    <button onClick={() => loadMore()}>load more</button>
   </div>
 
 }

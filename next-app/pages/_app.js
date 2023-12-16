@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useCeramicContext } from '../context/index';
 import { authenticateCeramic } from '../utils';
 import { ApolloClient, ApolloLink, InMemoryCache, Observable, ApolloProvider } from '@apollo/client';
+import { relayStylePagination } from "@apollo/client/utilities";
 
 function MyApp({ Component, pageProps }) {
   const clients = useCeramicContext()
@@ -23,12 +24,21 @@ function MyApp({ Component, pageProps }) {
     })
   })
 
-  const apolloClient = new ApolloClient({ cache: new InMemoryCache(), link })
+  const apolloClient = new ApolloClient({
+    cache: new InMemoryCache({
+      typePolicies: {
+        CeramicAccount: {
+          fields: {
+            cardList: relayStylePagination(),
+          },
+        },
+      },
+    }), link
+  })
 
   const handleLogin = async () => {
     await authenticateCeramic(ceramic, composeClient)
   }
-
 
   const addContextMenu = () => {
     function getScrollYAndHighlight() {
