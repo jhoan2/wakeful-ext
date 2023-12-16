@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useCeramicContext } from "../context/index";
-import { useLazyQuery, gql } from '@apollo/client';
-import GetCards from "../components/GetCards";
 import Youtube from "../components/Youtube";
 import Article from "../components/Article";
 import getVideoId from 'get-video-id';
@@ -13,7 +11,6 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
   const [currentResourceId, setCurrentResourceId] = useState('')
   const [currentTab, setCurrentTab] = useState({})
   const [youtubeId, setYoutubeId] = useState('')
-  const [showProfile, setShowProfile] = useState(true)
 
   const getCurrentTab = async () => {
     let queryOptions = { active: true, lastFocusedWindow: true };
@@ -58,6 +55,7 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
   useEffect(() => {
     onPanelOpen()
   }, [])
+
 
 
   //will have to connect to cache here too 
