@@ -18,7 +18,7 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
       ... on CeramicAccount {
         cardList(
           filters: {where: {deleted: {equalTo: false}, url: {equalTo: $url}}}
-          first: 1
+          first: 10
           after: $cursor
           ) {
           edges {
@@ -60,7 +60,6 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
         },
       })
     }
-    console.log(cards)
   }
 
   return <div className='dark:text-white'>
@@ -70,7 +69,15 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
         <NoContent />
       </div>
     }
-    <button onClick={() => loadMore()}>load more</button>
+    {pageInfo.hasNextPage ?
+      <button
+        onClick={() => loadMore()}
+        className='hover:bg-gradient-to-r from-amber-200 to-yellow-400 rounded-full  bg-yellow-100 w-full h-8  text-sm font-semibold rounded-full border border-transparent text-gray-500 disabled:opacity-50'
+      >
+        Load more
+      </button> :
+      null
+    }
   </div>
 
 }
