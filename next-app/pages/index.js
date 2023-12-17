@@ -4,6 +4,7 @@ import Youtube from "../components/Youtube";
 import Article from "../components/Article";
 import getVideoId from 'get-video-id';
 import Profile from "../components/Profile";
+import { gql, useLazyQuery } from '@apollo/client';
 
 function IndexPopup({ loggedIn, setLoggedIn }) {
   const clients = useCeramicContext()
@@ -31,6 +32,17 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
     return pngData;
   }
 
+  const GET_RESOURCE_ID = gql`
+  query getResourceId($url: String!) {
+    icarusResourceIndex(filters: {where: {url: {equalTo: $url}}}, first: 1) {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+  `
 
   const onPanelOpen = async () => {
     let tab = await getCurrentTab()
@@ -52,14 +64,21 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
     setYoutubeId(id)
   }
 
+  const [getResourceId, { data }] = useLazyQuery(GET_RESOURCE_ID, {
+    variables: { url: currentTab.url },
+    onCompleted: (data) => {
+      if (data && data.icarusResourceIndex.edges.length > 0 && data.icarusResourceIndex.edges[0].node.id) {
+        setCurrentResourceId(data.icarusResourceIndex.edges[0].node.id);
+      }
+    },
+  });
+
   useEffect(() => {
     onPanelOpen()
+    getResourceId()
   }, [])
 
 
-
-  //will have to connect to cache here too 
-  //think making a query for the cards will have to be here and so set the existing resource here 
   if (!loggedIn) {
     return (
       <div className="dark:bg-gray-800 h-screen flex justify-center items-center">

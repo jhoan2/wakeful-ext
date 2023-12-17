@@ -206,8 +206,6 @@ function MyApp({ Component, pageProps }) {
 
     chrome.contextMenus.create(contextMenuItem);
 
-
-
     chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
       //if no ceramic did that means user is not logged in
@@ -217,28 +215,25 @@ function MyApp({ Component, pageProps }) {
 
       const clientMutationId = composeClient.id
       const resource = await composeClient.executeQuery(`
-          query {
-            icarusResourceIndex(first: 2, filters:{ where: { url: { equalTo: "${tab.url}" }}}) {
-              edges {
-                node {
-                  id
-                }
+        query {
+          icarusResourceIndex(first: 2, filters:{ where: { url: { equalTo: "${tab.url}" }}}) {
+            edges {
+              node {
+                id
               }
             }
           }
-        `)
-      let resourceId
+        }
+      `)
 
-      if (ceramic.did === undefined) {
-        console.log(' no did ')
-        return
-      }
-
+      let resourceId, cid, scrollY, scrollHeight;
+      //if there is no resourceId create one
       if (resource?.data.icarusResourceIndex.edges.length === 0) {
         const newResourceId = await createNewResource(tab, clientMutationId);
         //Might need to show an error here.
         resourceId = newResourceId
       } else {
+        //else set the resourceId to the query result
         resourceId = resource.data.icarusResourceIndex.edges[0].node.id
       }
 
@@ -262,8 +257,9 @@ function MyApp({ Component, pageProps }) {
         quote: selectionText,
         pageYOffset: scrollY,
         scrollHeight: scrollHeight,
-        srcUrl: srcUrl,
+        cid: cid,
         deleted: false,
+        url: pageUrl
       }
 
       for (const key in input) {
@@ -297,7 +293,6 @@ function MyApp({ Component, pageProps }) {
     });
   }
 
-  // Update to include refresh on auth. this means I need to refresh the page when the user logs in. 
   useEffect(() => {
     if (localStorage.getItem('logged_in')) {
       handleLogin()
