@@ -31,6 +31,7 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
               scrollHeight
               updatedAt
               videoTime
+              quote
             }
           }
           pageInfo {

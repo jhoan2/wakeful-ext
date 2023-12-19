@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useCeramicContext } from "../context/index";
 import Youtube from "../components/Youtube";
 import Article from "../components/Article";
 import getVideoId from 'get-video-id';
@@ -7,8 +6,6 @@ import Profile from "../components/Profile";
 import { gql, useLazyQuery } from '@apollo/client';
 
 function IndexPopup({ loggedIn, setLoggedIn }) {
-  const clients = useCeramicContext()
-  const { ceramic, composeClient } = clients
   const [currentResourceId, setCurrentResourceId] = useState('')
   const [currentTab, setCurrentTab] = useState({})
   const [youtubeId, setYoutubeId] = useState('')
@@ -20,17 +17,7 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
     return tab;
   }
 
-  function capture() {
-    //this code is running inside the tab
-    var canvas = document.createElement('canvas');
-    var video = document.querySelector('video');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-    // Convert the canvas data to a Data URL with the desired format.
-    var pngData = canvas.toDataURL("image/png");
-    return pngData;
-  }
+
 
   const GET_RESOURCE_ID = gql`
   query getResourceId($url: String!) {
@@ -64,7 +51,7 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
     setYoutubeId(id)
   }
 
-  const [getResourceId, { data }] = useLazyQuery(GET_RESOURCE_ID, {
+  const [getResourceId] = useLazyQuery(GET_RESOURCE_ID, {
     variables: { url: currentTab.url },
     onCompleted: (data) => {
       if (data && data.icarusResourceIndex.edges.length > 0 && data.icarusResourceIndex.edges[0].node.id) {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import YoutubeCaption from './YoutubeCaption';
 
-export default function YoutubeCaptionsList({ styles, currentTabId, subtitles, currentTime }) {
+export default function YoutubeCaptionsList({ currentTabId, subtitles, currentTime }) {
     const [currentElementTime, setCurrentElementTime] = useState(0)
 
     if (currentElementTime !== currentTime) {
@@ -18,13 +18,11 @@ export default function YoutubeCaptionsList({ styles, currentTabId, subtitles, c
             {subtitles.map((subtitle) => {
                 return <YoutubeCaption
                     key={subtitle.start}
-                    styles={styles}
                     subtitle={subtitle}
                     currentTime={currentTime}
                     currentTabId={currentTabId}
                 />
             })}
-
         </div>
     )
 }

@@ -1,7 +1,10 @@
 import React from 'react'
+import GetCards from './GetCards'
 
-export default function YoutubeNotes() {
+export default function YoutubeNotes({ currentTab }) {
     return (
-        <div>YoutubeNotes</div>
+        <div>
+            <GetCards currentTab={currentTab} />
+        </div>
     )
 }

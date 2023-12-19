@@ -1,4 +1,3 @@
-import React from 'react'
 
 export default function CardImage({ cid }) {
 
@@ -10,8 +9,8 @@ export default function CardImage({ cid }) {
                 src={`https://purple-defensive-anglerfish-674.mypinata.cloud/ipfs/${cid}?img-width=240`}
                 alt="Image"
                 loading='lazy'
+                width={240}
             />
         </div>
-
     )
 }
