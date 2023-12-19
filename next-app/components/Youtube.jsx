@@ -138,7 +138,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
                 title: currentTab.title,
                 createdAt: date,
                 updatedAt: date,
-                cid: cid
+                cid: cid,
             }),
         })
 
@@ -187,6 +187,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
                         videoTime: videoTimeString,
                         pinSize: pinSize,
                         url: currentTab.url,
+                        deleted: false,
                     }
                 }
             }

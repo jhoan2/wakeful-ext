@@ -189,7 +189,7 @@ export default function Card({ content, currentTab }) {
 
     if (loading) return 'Submitting...';
     if (error) return `Submission error! ${error.message}`;
-    if (!quote && !annotation) return null
+    if (!quote && !annotation && !cid) return null
 
     return (
         <div className='border-2 rounded relative p-6'>
