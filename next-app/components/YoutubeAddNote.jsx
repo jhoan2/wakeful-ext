@@ -1,14 +1,10 @@
 import React, { useState } from 'react'
 import { gql, useMutation } from '@apollo/client';
-import { useCeramicContext } from '../context';
 import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import EditorBubbleMenu from './EditorBubbleMenu';
 
-export default function YoutubeAddNote({ currentTab, youtubeId, currentResourceId, setCurrentResourceId, createNewYoutubeResource, setYoutubeOpenAddNote }) {
-    const clients = useCeramicContext()
-    const { composeClient } = clients
-    const currentTabId = currentTab.id
+export default function YoutubeAddNote({ currentTab, currentResourceId, setCurrentResourceId, createNewYoutubeResource, setYoutubeOpenAddNote }) {
     const [inputImage, setInputImage] = useState(false)
     const [image, setImage] = useState(null)
 
@@ -21,7 +17,7 @@ export default function YoutubeAddNote({ currentTab, youtubeId, currentResourceI
         }
       }`
 
-    const [addNote, { data, loading, error }] = useMutation(ADD_NOTE, {
+    const [addNote, { loading, error }] = useMutation(ADD_NOTE, {
         onCompleted: () => setYoutubeOpenAddNote(false)
     });
 

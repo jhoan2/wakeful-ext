@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import YoutubeCaption from './YoutubeCaption';
 
 export default function YoutubeCaptionsList({ currentTabId, subtitles, currentTime }) {
