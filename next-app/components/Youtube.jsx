@@ -4,6 +4,7 @@ import YoutubeNotes from './YoutubeNotes';
 import YoutubeAddNote from './YoutubeAddNote';
 import { getVideoDetails } from 'youtube-caption-extractor';
 import { useCeramicContext } from '../context';
+import { gql, useMutation } from '@apollo/client';
 import SkeletonYoutubeCaptions from './SkeletonYoutubeCaptions';
 
 export default function YoutubeAnnotations({ currentTab, youtubeId, currentResourceId, setCurrentResourceId, loggedIn, setLoggedIn }) {
@@ -69,7 +70,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
         canvas.width = videoElement.videoWidth;
         canvas.height = videoElement.videoHeight;
         canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL()
+        const dataUrl = canvas.toDataURL("image/jpeg")
         return { dataUrl: dataUrl, videoTime: videoTime }
     }
 
@@ -100,20 +101,20 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
 
             const canvasBlob = dataURLtoBlob(canvasDataUrl)
 
-            let canvasForm = new FormData()
+            let formData = new FormData()
             const file = new File([canvasBlob], `image.jpg`, { type: 'image/jpeg' });
-            canvasForm.set('canvasFile', file, 'screenshot.jpg')
+            formData.set('file', file)
 
-            const res = await fetch('http://localhost:3000/api/uploadImage', {
+            const res = await fetch('http://localhost:3000/api/cardImage', {
                 method: 'POST',
-                body: canvasForm,
+                body: formData,
             })
             if (!res.ok) {
                 throw new Error('Server responded with an error: ' + res.status);
             }
             const data = await res.json();
-            //data = {rootCid: rootCid}
-            return { videoTime: canvasVideoTime, cid: data.rootCid }
+            const { pinataData } = data
+            return { videoTime: canvasVideoTime, pinataData: pinataData }
         } catch (error) {
             console.error(error);
         }
@@ -122,7 +123,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
     const createNewYoutubeResource = async () => {
         const youtubeObj = await getScreenshotYoutube()
         //youtubeObj = { cid: rootCid }
-        const { cid } = youtubeObj
+        const cid = youtubeObj.pinataData.IpfsHash
         const clientMutationId = composeClient.id
         const date = new Date().toISOString()
 
@@ -170,17 +171,22 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
         }
 
         const screenshotObj = await getScreenshotYoutube()
-        const { videoTime, cid } = screenshotObj
+        const { videoTime } = screenshotObj
+        const videoTimeString = videoTime.toString()
+        const cid = screenshotObj.pinataData.IpfsHash
+        const pinSize = screenshotObj.pinataData.PinSize
 
         addNote({
             variables: {
                 input: {
                     content: {
-                        createdAt: date,
-                        updatedAt: date,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
                         resourceId: newYoutubeResourceId,
                         cid: cid,
-                        // videoTime: videoTime
+                        videoTime: videoTimeString,
+                        pinSize: pinSize,
+                        url: currentTab.url,
                     }
                 }
             }
