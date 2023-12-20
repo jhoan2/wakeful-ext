@@ -18,7 +18,8 @@ export default function YoutubeAddNote({ currentTab, currentResourceId, setCurre
       }`
 
     const [addNote, { loading, error }] = useMutation(ADD_NOTE, {
-        onCompleted: () => setYoutubeOpenAddNote(false)
+        onCompleted: () => setYoutubeOpenAddNote(false),
+        refetchQueries: ['getCardsPeUrlPerUser'],
     });
 
     const editor = useEditor({
