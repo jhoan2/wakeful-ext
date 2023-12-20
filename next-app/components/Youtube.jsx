@@ -160,7 +160,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
 
     const [addNote, { data, loading, error }] = useMutation(ADD_NOTE, {
         // onCompleted: () => setOpenAddNote(false)
-        //To do: need to show some notification that it worked here. 
+        refetchQueries: ['getCardsPeUrlPerUser'],
     });
 
     const addScreenshotNote = async () => {
@@ -239,7 +239,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
                 </div>
             </div>
             {openYoutubeAddNote ?
-                <div className='border-2 rounded fixed p-6 w-full bg-gray-100'>
+                <div className='border-2 rounded fixed p-6 w-full bg-gray-100 z-10'>
                     <YoutubeAddNote
                         currentTab={currentTab}
                         youtubeId={youtubeId}
