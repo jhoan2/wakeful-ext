@@ -23,7 +23,8 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
         }
       }`
     const [addNote, { data, loading, error }] = useMutation(ADD_NOTE, {
-        onCompleted: () => setOpenAddNote(false)
+        onCompleted: () => setOpenAddNote(false),
+        refetchQueries: ['getCardsPeUrlPerUser'],
     });
 
     function getScrollY() {

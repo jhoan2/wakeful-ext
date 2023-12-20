@@ -209,7 +209,6 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
         injectSyncVideo(currentTabId);
     }, [])
 
-    if (loading) return 'Submitting...';
     if (error) return `Submission error! ${error.message}`;
 
     return (

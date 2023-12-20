@@ -13,7 +13,7 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
   const clientMutationId = composeClient.id
 
   const GET_CARDS_PER_URL_PER_USER = gql`
-  query GetCardsPerUrlPerUser ($url: String, $clientMutationId: ID!, $cursor: String) {
+  query getCardsPeUrlPerUser ($url: String, $clientMutationId: ID!, $cursor: String) {
     node(id: $clientMutationId) {
       ... on CeramicAccount {
         cardList(

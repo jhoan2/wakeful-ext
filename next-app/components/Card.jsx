@@ -23,41 +23,12 @@ export default function Card({ content, currentTab }) {
         }
       }`
 
-    const GET_CARDS_PER_URL = gql`
-      query GET_CARDS_PER_URL {
-          icarusResourceIndex(
-            first: 1
-            filters: {where: {url: {equalTo: "${currentUrl}"}}}
-          ) {
-            edges {
-              node {
-                title
-                cards(
-                  first: 10
-                  filters: {where: {deleted: {equalTo: false}}}
-                ) {
-                  edges {
-                    node {
-                      id
-                      pageYOffset
-                      resourceId
-                      quote
-                      annotation
-                    }
-                  }
-                }
-              }
-            }
-          }
-      }`
+    const [sendUpdateNote, { data, loading, error }] = useMutation(UPDATE_NOTE, {
+        refetchQueries: ['getCardsPeUrlPerUser'],
+    });
 
-    const [sendUpdateNote, { data, loading, error }] = useMutation(UPDATE_NOTE);
-
-    const [sendDeleteNote, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(UPDATE_NOTE, {
-        onCompleted: () => setToggleInput(false),
-        refetchQueries: [
-            { query: GET_CARDS_PER_URL }
-        ]
+    const [sendDeleteNote] = useMutation(UPDATE_NOTE, {
+        refetchQueries: ['getCardsPeUrlPerUser'],
     });
 
     const updateNote = async () => {
