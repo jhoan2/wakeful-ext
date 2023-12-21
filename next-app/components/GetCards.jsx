@@ -20,6 +20,7 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
           filters: {where: {deleted: {equalTo: false}, url: {equalTo: $url}}}
           first: 10
           after: $cursor
+          sorting: {updatedAt: DESC}
           ) {
           edges {
             node {
