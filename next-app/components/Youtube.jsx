@@ -146,7 +146,7 @@ export default function YoutubeAnnotations({ currentTab, youtubeId, currentResou
             throw new Error('Server responded with an error: ' + res.status);
         }
         const data = await res.json();
-        return data.newResourceId.data.createIcarusResource.document.id
+        return data.newResourceId.data.createIdealiteResource.document.id
     }
 
     const ADD_NOTE = gql`

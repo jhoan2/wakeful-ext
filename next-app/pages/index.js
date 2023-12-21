@@ -21,7 +21,7 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
 
   const GET_RESOURCE_ID = gql`
   query getResourceId($url: String!) {
-    icarusResourceIndex(filters: {where: {url: {equalTo: $url}}}, first: 1) {
+    idealiteResourceIndex(filters: {where: {url: {equalTo: $url}}}, first: 1) {
       edges {
         node {
           id
@@ -54,8 +54,8 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
   const [getResourceId] = useLazyQuery(GET_RESOURCE_ID, {
     variables: { url: currentTab.url },
     onCompleted: (data) => {
-      if (data && data.icarusResourceIndex.edges.length > 0 && data.icarusResourceIndex.edges[0].node.id) {
-        setCurrentResourceId(data.icarusResourceIndex.edges[0].node.id);
+      if (data && data.idealiteResourceIndex.edges.length > 0 && data.idealiteResourceIndex.edges[0].node.id) {
+        setCurrentResourceId(data.idealiteResourceIndex.edges[0].node.id);
       }
     },
   });

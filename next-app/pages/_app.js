@@ -176,7 +176,7 @@ function MyApp({ Component, pageProps }) {
       }
       const data = await res.json();
       console.log(data)
-      return data.newResourceId.data?.createIcarusResource.document.id
+      return data.newResourceId.data?.createIdealiteResource.document.id
     }
 
     const fetchImgSrc = async (imgUrl) => {
@@ -216,7 +216,7 @@ function MyApp({ Component, pageProps }) {
       const clientMutationId = composeClient.id
       const resource = await composeClient.executeQuery(`
         query {
-          icarusResourceIndex(first: 2, filters:{ where: { url: { equalTo: "${tab.url}" }}}) {
+          idealiteResourceIndex(first: 2, filters:{ where: { url: { equalTo: "${tab.url}" }}}) {
             edges {
               node {
                 id
@@ -228,13 +228,13 @@ function MyApp({ Component, pageProps }) {
 
       let resourceId, cid, scrollY, scrollHeight;
       //if there is no resourceId create one
-      if (resource?.data.icarusResourceIndex.edges.length === 0) {
+      if (resource?.data.idealiteResourceIndex.edges.length === 0) {
         const newResourceId = await createNewResource(tab, clientMutationId);
         //Might need to show an error here.
         resourceId = newResourceId
       } else {
         //else set the resourceId to the query result
-        resourceId = resource.data.icarusResourceIndex.edges[0].node.id
+        resourceId = resource.data.idealiteResourceIndex.edges[0].node.id
       }
 
       const { srcUrl, selectionText, pageUrl } = info
