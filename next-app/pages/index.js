@@ -4,11 +4,13 @@ import Article from "../components/Article";
 import getVideoId from 'get-video-id';
 import Profile from "../components/Profile";
 import { gql, useLazyQuery } from '@apollo/client';
+import { useUserContext } from "../context/UserContext";
 
 function IndexPopup({ loggedIn, setLoggedIn }) {
   const [currentResourceId, setCurrentResourceId] = useState('')
   const [currentTab, setCurrentTab] = useState({})
   const [youtubeId, setYoutubeId] = useState('')
+  const { userProfile, setUserProfile } = useUserContext()
 
   const getCurrentTab = async () => {
     let queryOptions = { active: true, lastFocusedWindow: true };
@@ -26,6 +28,17 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
         node {
           id
         }
+      }
+    }
+  }
+  `
+
+  const GET_USER_PROFILE = gql`
+  query getUserProfile {
+    viewer {
+      idealiteProfile {
+        bio
+        avatarCid
       }
     }
   }
@@ -60,9 +73,19 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
     },
   });
 
+  const [getUserProfile] = useLazyQuery(GET_USER_PROFILE, {
+    onCompleted: (data) => {
+      if (data.viewer !== null) {
+        console.log('data', data)
+        // setUserProfile(data.idealiteResourceIndex.edges[0]);
+      }
+    },
+  });
+
   useEffect(() => {
     onPanelOpen()
     getResourceId()
+    getUserProfile()
   }, [])
 
 

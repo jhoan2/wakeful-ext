@@ -5,6 +5,7 @@ import { useCeramicContext } from '../context/index';
 import { authenticateCeramic } from '../utils';
 import { ApolloClient, ApolloLink, InMemoryCache, Observable, ApolloProvider } from '@apollo/client';
 import { relayStylePagination } from "@apollo/client/utilities";
+import { UserContextWrapper } from '../context/UserContext';
 
 function MyApp({ Component, pageProps }) {
   const clients = useCeramicContext()
@@ -29,7 +30,7 @@ function MyApp({ Component, pageProps }) {
       typePolicies: {
         CeramicAccount: {
           fields: {
-            cardList: relayStylePagination(),
+            cardsList: relayStylePagination(),
           },
         },
       },
@@ -275,8 +276,8 @@ function MyApp({ Component, pageProps }) {
       }
 
       const cardId = await composeClient.executeQuery(`
-      mutation CreateNewCard ($i: CreateCardInput!) {
-        createCard(
+      mutation CreateNewCard ($i: CreateCardsInput!) {
+        createCards(
           input: $i
         ) {
           document {
@@ -311,13 +312,15 @@ function MyApp({ Component, pageProps }) {
       <ApolloProvider client={apolloClient}>
         <div>
           <CeramicWrapper>
-            <div>
-              <Component
-                {...pageProps}
-                loggedIn={loggedIn}
-                setLoggedIn={setLoggedIn}
-              />
-            </div>
+            <UserContextWrapper>
+              <div>
+                <Component
+                  {...pageProps}
+                  loggedIn={loggedIn}
+                  setLoggedIn={setLoggedIn}
+                />
+              </div>
+            </UserContextWrapper>
           </CeramicWrapper>
         </div>
       </ApolloProvider>
