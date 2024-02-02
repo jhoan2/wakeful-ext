@@ -9,8 +9,8 @@ export default function YoutubeAddNote({ currentTab, currentResourceId, setCurre
     const [image, setImage] = useState(null)
 
     const ADD_NOTE = gql`
-    mutation ADD_NOTE($input: CreateCardInput!) {
-        createCard(input: $input) {
+    mutation ADD_NOTE($input: CreateCardsInput!) {
+        createCards(input: $input) {
           document {
             id
           }

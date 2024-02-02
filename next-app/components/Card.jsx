@@ -14,8 +14,8 @@ export default function Card({ content, currentTab }) {
     const [showSubmit, setShowSubmit] = useState(false)
 
     const UPDATE_NOTE = gql`
-    mutation UPDATE_NOTE($input: UpdateCardInput!) {
-        updateCard(input: $input) {
+    mutation UPDATE_NOTE($input: UpdateCardsInput!) {
+        updateCards(input: $input) {
           document {
             id
             annotation
@@ -149,7 +149,7 @@ export default function Card({ content, currentTab }) {
         ],
         editorProps: {
             attributes: {
-                class: 'prose prose-md lg:prose-lg dark:prose-invert outline outline-amber-400 max-w-full outline-offset-2 outline-2 rounded-md',
+                class: 'prose prose-md lg:prose-lg dark:prose-invert hover:outline outline-amber-400 max-w-full outline-offset-2 outline-2 rounded-md',
             },
         },
         content: annotation,
