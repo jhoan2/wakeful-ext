@@ -2,9 +2,8 @@ import React, { useState } from 'react'
 import AddNote from './AddNote';
 import GetCards from './GetCards'
 
-export default function Article({ currentTab, setCurrentResourceId, currentResourceId, setLoggedIn, loggedIn }) {
+export default function Article({ currentTab, setCurrentResourceId, currentResourceId, setLoggedIn, loggedIn, }) {
     const [openAddNote, setOpenAddNote] = useState(false)
-
     const refresh = () => {
         window.location.reload();
     }
