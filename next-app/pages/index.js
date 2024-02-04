@@ -4,22 +4,19 @@ import Article from "../components/Article";
 import getVideoId from 'get-video-id';
 import Profile from "../components/Profile";
 import { gql, useLazyQuery } from '@apollo/client';
-import { useUserContext } from "../context/UserContext";
+import { useUserContext } from "../context";
 
 function IndexPopup({ loggedIn, setLoggedIn }) {
   const [currentResourceId, setCurrentResourceId] = useState('')
   const [currentTab, setCurrentTab] = useState({})
   const [youtubeId, setYoutubeId] = useState('')
-  const { userProfile, setUserProfile } = useUserContext()
-
+  const { userProfile, getUserDetails } = useUserContext();
   const getCurrentTab = async () => {
     let queryOptions = { active: true, lastFocusedWindow: true };
     // `tab` will either be a `tabs.Tab` instance or `undefined`.
     let [tab] = await chrome.tabs.query(queryOptions);
     return tab;
   }
-
-
 
   const GET_RESOURCE_ID = gql`
   query getResourceId($url: String!) {
@@ -39,10 +36,31 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
       idealiteProfile {
         bio
         avatarCid
+        displayName
       }
     }
   }
   `
+  const [getResourceId] = useLazyQuery(GET_RESOURCE_ID, {
+    variables: { url: currentTab.url },
+    onCompleted: (data) => {
+      if (data && data.idealiteResourceIndex.edges.length > 0 && data.idealiteResourceIndex.edges[0].node.id) {
+        setCurrentResourceId(data.idealiteResourceIndex.edges[0].node.id);
+      }
+    },
+  });
+
+  const [getUserProfile] = useLazyQuery(GET_USER_PROFILE, {
+    onCompleted: (data) => {
+      if (data.viewer !== null) {
+        getUserDetails({
+          displayName: data.viewer.idealiteProfile.displayName,
+          avatarCid: data.viewer.idealiteProfile.avatarCid,
+          bio: data.viewer.idealiteProfile.bio
+        });
+      }
+    },
+  });
 
   const onPanelOpen = async () => {
     let tab = await getCurrentTab()
@@ -62,37 +80,19 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
     }
 
     setYoutubeId(id)
+    await getUserProfile()
   }
-
-  const [getResourceId] = useLazyQuery(GET_RESOURCE_ID, {
-    variables: { url: currentTab.url },
-    onCompleted: (data) => {
-      if (data && data.idealiteResourceIndex.edges.length > 0 && data.idealiteResourceIndex.edges[0].node.id) {
-        setCurrentResourceId(data.idealiteResourceIndex.edges[0].node.id);
-      }
-    },
-  });
-
-  const [getUserProfile] = useLazyQuery(GET_USER_PROFILE, {
-    onCompleted: (data) => {
-      if (data.viewer !== null) {
-        console.log('data', data)
-        // setUserProfile(data.idealiteResourceIndex.edges[0]);
-      }
-    },
-  });
 
   useEffect(() => {
     onPanelOpen()
     getResourceId()
-    getUserProfile()
   }, [])
 
 
   if (!loggedIn) {
     return (
       <div className="dark:bg-gray-800 h-screen flex justify-center items-center">
-        <Profile />
+        <Profile userProfile={userProfile} />
       </div>
     )
   }
@@ -107,14 +107,16 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
             currentResourceId={currentResourceId}
             setCurrentResourceId={setCurrentResourceId}
             loggedIn={loggedIn}
-            setLoggedIn={setLoggedIn} />
+            setLoggedIn={setLoggedIn}
+          />
           :
           <Article
             currentTab={currentTab}
             setCurrentResourceId={setCurrentResourceId}
             currentResourceId={currentResourceId}
             loggedIn={loggedIn}
-            setLoggedIn={setLoggedIn} />
+            setLoggedIn={setLoggedIn}
+          />
       }
     </div>
   );

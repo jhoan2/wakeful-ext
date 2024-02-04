@@ -5,7 +5,6 @@ import { useCeramicContext } from '../context/index';
 import { authenticateCeramic } from '../utils';
 import { ApolloClient, ApolloLink, InMemoryCache, Observable, ApolloProvider } from '@apollo/client';
 import { relayStylePagination } from "@apollo/client/utilities";
-import { UserContextWrapper } from '../context/UserContext';
 
 function MyApp({ Component, pageProps }) {
   const clients = useCeramicContext()
@@ -303,7 +302,6 @@ function MyApp({ Component, pageProps }) {
       //remove the context menu if the user is not logged in
       chrome.contextMenus.remove("save-to-wakeful")
     }
-
   }, [])
 
 
@@ -312,15 +310,13 @@ function MyApp({ Component, pageProps }) {
       <ApolloProvider client={apolloClient}>
         <div>
           <CeramicWrapper>
-            <UserContextWrapper>
-              <div>
-                <Component
-                  {...pageProps}
-                  loggedIn={loggedIn}
-                  setLoggedIn={setLoggedIn}
-                />
-              </div>
-            </UserContextWrapper>
+            <div>
+              <Component
+                {...pageProps}
+                loggedIn={loggedIn}
+                setLoggedIn={setLoggedIn}
+              />
+            </div>
           </CeramicWrapper>
         </div>
       </ApolloProvider>

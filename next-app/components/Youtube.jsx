@@ -7,7 +7,14 @@ import { useCeramicContext } from '../context';
 import { gql, useMutation } from '@apollo/client';
 import SkeletonYoutubeCaptions from './SkeletonYoutubeCaptions';
 
-export default function YoutubeAnnotations({ currentTab, youtubeId, currentResourceId, setCurrentResourceId, loggedIn, setLoggedIn }) {
+export default function YoutubeAnnotations({
+    currentTab,
+    youtubeId,
+    currentResourceId,
+    setCurrentResourceId,
+    loggedIn,
+    setLoggedIn,
+}) {
     const [showNotes, setShowNotes] = useState(false)
     const [openYoutubeAddNote, setYoutubeOpenAddNote] = useState(false)
     const currentTabId = currentTab.id

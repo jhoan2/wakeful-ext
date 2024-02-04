@@ -4,6 +4,7 @@ import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import EditorBubbleMenu from './EditorBubbleMenu';
 import StarterKit from '@tiptap/starter-kit';
 import CardImage from './CardImage';
+import CardActionsButton from './CardActionsButton';
 
 export default function Card({ content, currentTab }) {
     const { id, quote, annotation, pageYOffset, scrollHeight, cid } = content.node
@@ -12,6 +13,7 @@ export default function Card({ content, currentTab }) {
     const [inputImage, setInputImage] = useState(false)
     const [uploadImage, setUploadImage] = useState(null)
     const [showSubmit, setShowSubmit] = useState(false)
+
 
     const UPDATE_NOTE = gql`
     mutation UPDATE_NOTE($input: UpdateCardsInput!) {
@@ -24,10 +26,6 @@ export default function Card({ content, currentTab }) {
       }`
 
     const [sendUpdateNote, { data, loading, error }] = useMutation(UPDATE_NOTE, {
-        refetchQueries: ['getCardsPeUrlPerUser'],
-    });
-
-    const [sendDeleteNote] = useMutation(UPDATE_NOTE, {
         refetchQueries: ['getCardsPeUrlPerUser'],
     });
 
@@ -63,21 +61,6 @@ export default function Card({ content, currentTab }) {
                 }
             }
         })
-    }
-
-    const deleteNote = async () => {
-        await sendDeleteNote({
-            variables: {
-                input: {
-                    id: id,
-                    content: {
-                        updatedAt: new Date().toISOString(),
-                        deleted: true,
-                    }
-                }
-            }
-        })
-        setUpdateNoteContent('')
     }
 
     function scrollTo(pageYOffset, scrollHeight) {
@@ -164,9 +147,7 @@ export default function Card({ content, currentTab }) {
 
     return (
         <div className='border-2 rounded relative p-6'>
-            <button className='absolute top-0 right-1 text-red-300 hover:bg-red-600 rounded-md p-1' onClick={() => deleteNote()}>
-                X
-            </button>
+            <CardActionsButton id={id} />
             {quote ?
                 <p className='italic border rounded p-2 hover:bg-gray-100' onClick={() => executeScrollTo()}>
                     {quote}

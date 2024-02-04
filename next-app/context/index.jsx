@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
 import { CeramicClient } from "@ceramicnetwork/http-client"
 import { ComposeClient } from "@composedb/client";
 
@@ -16,11 +16,26 @@ const composeClient = new ComposeClient({
 });
 
 const CeramicContext = createContext({ ceramic: ceramic, composeClient: composeClient });
+const UserContext = createContext();
 
 export const CeramicWrapper = ({ children }) => {
+  const [userProfile, setUserProfile] = useState({
+    displayName: '',
+    bio: '',
+    avatarCid: '',
+    favorites: [],
+  });
+
+  const getUserDetails = useCallback((user) => {
+    setUserProfile(user);
+  }, []);
+
+  const value = useMemo(() => ({ userProfile, getUserDetails }), [userProfile]);
   return (
     <CeramicContext.Provider value={{ ceramic, composeClient }}>
-      {children}
+      <UserContext.Provider value={value}>
+        {children}
+      </UserContext.Provider>
     </CeramicContext.Provider>
   );
 };
@@ -32,3 +47,4 @@ export const CeramicWrapper = ({ children }) => {
  */
 
 export const useCeramicContext = () => useContext(CeramicContext);
+export const useUserContext = () => useContext(UserContext);

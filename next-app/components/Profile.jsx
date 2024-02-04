@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { authenticateCeramic } from '../utils/index'
+import React, { useEffect, useState } from 'react';
+import { authenticateCeramic } from '../utils/index';
 import { useCeramicContext } from "../context/index";
+import * as Avatar from '@radix-ui/react-avatar';
 
-export default function Profile() {
+export default function Profile({ userProfile }) {
     const clients = useCeramicContext()
     const { ceramic, composeClient } = clients
+    const composeClientId = composeClient.id
+    const avatarFallback = composeClientId ? composeClientId.substring(composeClientId.length - 5) : '0x...'
     const [hasLoggedIn, setHasLoggedIn] = useState(false)
     const toggleDarkMode = () => {
         if (localStorage.getItem("theme") === "dark") {
@@ -52,6 +55,16 @@ export default function Profile() {
 
     return (
         <div>
+            <div className='flex justify-center'>
+                <Avatar.Root>
+                    <Avatar.Image />
+                    <Avatar.Fallback>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">
+                            {userProfile.displayName ? userProfile.displayName : `0x...${avatarFallback}`}
+                        </span>
+                    </Avatar.Fallback>
+                </Avatar.Root>
+            </div>
             <div className='flex flex-col justify-center space-y-4'>
                 <div className='flex items-center space-x-4'>
                     <img src={'/next-assets/icon32.png'} className="w-16 h-16 object-cover rounded-full" alt="Idealite logo" />
