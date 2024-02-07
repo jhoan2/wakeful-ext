@@ -250,6 +250,8 @@ function MyApp({ Component, pageProps }) {
         scrollHeight = parseInt(scrollObj.scrollHeight)
       }
 
+      if (!resourceId) return
+
       let input = {
         createdAt: date,
         updatedAt: date,
