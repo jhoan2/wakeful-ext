@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import AddNote from './AddNote';
-import GetCards from './GetCards'
+import GetCards from './GetCards';
 
 export default function Article({ currentTab, setCurrentResourceId, currentResourceId, setLoggedIn, loggedIn, }) {
     const [openAddNote, setOpenAddNote] = useState(false)
+    const { title } = currentTab || ''
     const refresh = () => {
         window.location.reload();
     }
@@ -23,6 +24,7 @@ export default function Article({ currentTab, setCurrentResourceId, currentResou
                     </button>
                 </div>
             </div>
+            <h2 className="text-2xl font-bold text-pretty text-center">{title}</h2>
             {openAddNote ?
                 <div className='border-2 rounded fixed p-4 w-full bg-gray-100 z-10'>
                     <AddNote
