@@ -29,6 +29,7 @@
     "next": "12.0.8",
     "react": "latest",
     "react-dom": "latest",
+    "sonner": "^1.4.0",
     "youtube-caption-extractor": "^1.4.3"
   },
   "devDependencies": {
