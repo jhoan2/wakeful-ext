@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }) {
       typePolicies: {
         CeramicAccount: {
           fields: {
-            cardsList: relayStylePagination(),
+            idealiteCardsList: relayStylePagination(),
           },
         },
       },
@@ -279,8 +279,8 @@ function MyApp({ Component, pageProps }) {
       }
 
       const cardId = await composeClient.executeQuery(`
-      mutation CreateNewCard ($i: CreateCardsInput!) {
-        createCards(
+      mutation CreateNewCard ($i: CreateIdealiteCardsInput!) {
+        createIdealiteCards(
           input: $i
         ) {
           document {

@@ -157,8 +157,8 @@ export default function YoutubeAnnotations({
     }
 
     const ADD_NOTE = gql`
-    mutation ADD_NOTE($input: CreateCardsInput!) {
-        createCards(input: $input) {
+    mutation ADD_NOTE($input: CreateIdealiteCardsInput!) {
+        createIdealiteCards(input: $input) {
           document {
             id
           }

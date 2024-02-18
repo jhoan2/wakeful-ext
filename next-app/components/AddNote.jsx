@@ -15,8 +15,8 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
     const [loadingNewResource, setLoadingNewResource] = useState(false)
 
     const ADD_NOTE = gql`
-    mutation ADD_NOTE($input: CreateCardsInput!) {
-        createCards(input: $input) {
+    mutation ADD_NOTE($input: CreateIdealiteCardsInput!) {
+        createIdealiteCards(input: $input) {
           document {
             id
           }
