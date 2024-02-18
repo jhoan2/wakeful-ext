@@ -21,9 +21,9 @@ export default function GooglePlayBooks({ currentTab, setCurrentResourceId, curr
     }
 
     const CHECK_ACCOUNT_RESOURCES_FOR_BOOK = gql`
-    query checkAccountResourcesForBook($url: String) {
+    query checkIdealiteAccountResourcesForBook($url: String) {
         viewer {
-          accountResourcesList(first: 1, filters: {where: {url: {equalTo: $url}}}) {
+          idealiteAccountResourcesList(first: 1, filters: {where: {url: {equalTo: $url}}}) {
             edges {
               node {
                 id
@@ -38,7 +38,7 @@ export default function GooglePlayBooks({ currentTab, setCurrentResourceId, curr
         variables: { url: currentUrl }
     });
 
-    if (!data?.viewer?.accountResourcesList[0]?.node) {
+    if (!data?.viewer?.idealiteAccountResourcesList[0]?.node) {
         return <AddBook currentUrl={currentUrl} />
     }
 
