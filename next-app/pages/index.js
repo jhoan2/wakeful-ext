@@ -5,11 +5,13 @@ import getVideoId from 'get-video-id';
 import Profile from "../components/Profile";
 import { gql, useLazyQuery } from '@apollo/client';
 import { useUserContext } from "../context";
+import GooglePlayBooks from "../components/googleplay/GooglePlayBooks";
 
 function IndexPopup({ loggedIn, setLoggedIn }) {
   const [currentResourceId, setCurrentResourceId] = useState('')
   const [currentTab, setCurrentTab] = useState({})
   const [youtubeId, setYoutubeId] = useState('')
+  const [websiteType, setWebsiteType] = useState('')
   const { userProfile, getUserDetails } = useUserContext();
   const getCurrentTab = async () => {
     let queryOptions = { active: true, lastFocusedWindow: true };
@@ -65,22 +67,34 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
   const onPanelOpen = async () => {
     let tab = await getCurrentTab()
     setCurrentTab(tab)
+    await getUserProfile()
 
-    //get baseUrl from youtube and articles
-    const { id } = getVideoId(tab.url);
-    const hashIndex = tab.url.indexOf('#');
-    if (id) {
-      const baseYoutubeUrl = 'https://www.youtube.com/watch?v=' + id
-      tab.url = baseYoutubeUrl
-      setCurrentTab(tab)
+    if (tab.url.includes('youtube')) {
+      const { id } = getVideoId(tab.url);
+      if (id) {
+        const baseYoutubeUrl = 'https://www.youtube.com/watch?v=' + id
+        tab.url = baseYoutubeUrl
+        setCurrentTab(tab)
+        setYoutubeId(id)
+      }
+      setWebsiteType('youtube')
+      return
     }
+
+    if (tab.url.includes('play.google.com/books/reader')) {
+      setCurrentTab(tab)
+      setWebsiteType('googleplay')
+      return
+    }
+
+    //If it's not youtube or google play books, then it must be an article
+    //get baseUrl from articles
+    const hashIndex = tab.url.indexOf('#');
     if (hashIndex > -1) {
       tab.url = tab.url.substring(0, hashIndex)
       setCurrentTab(tab)
     }
-
-    setYoutubeId(id)
-    await getUserProfile()
+    setWebsiteType('article')
   }
 
   useEffect(() => {
@@ -100,7 +114,7 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
   return (
     <div className="dark:bg-gray-800 h-screen">
       {
-        youtubeId ?
+        websiteType === 'youtube' ?
           <Youtube
             currentTab={currentTab}
             youtubeId={youtubeId}
@@ -110,6 +124,22 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
             setLoggedIn={setLoggedIn}
           />
           :
+          null
+      }
+      {
+        websiteType === 'googleplay' ?
+          <GooglePlayBooks
+            currentTab={currentTab}
+            currentResourceId={currentResourceId}
+            setCurrentResourceId={setCurrentResourceId}
+            loggedIn={loggedIn}
+            setLoggedIn={setLoggedIn}
+          />
+          :
+          null
+      }
+      {
+        websiteType === 'article' ?
           <Article
             currentTab={currentTab}
             setCurrentResourceId={setCurrentResourceId}
@@ -117,6 +147,8 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
             loggedIn={loggedIn}
             setLoggedIn={setLoggedIn}
           />
+          :
+          null
       }
     </div>
   );

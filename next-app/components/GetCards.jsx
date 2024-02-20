@@ -16,7 +16,7 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
   query getCardsPeUrlPerUser ($url: String, $clientMutationId: ID!, $cursor: String) {
     node(id: $clientMutationId) {
       ... on CeramicAccount {
-        cardsList(
+        idealiteCardsList(
           filters: {where: {deleted: {equalTo: false}, url: {equalTo: $url}}}
           first: 10
           after: $cursor
@@ -52,8 +52,8 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
   if (loading) return <SkeletonCard />
   if (error) return <ErrorPage message={error.message} />;
 
-  const cards = data.node?.cardsList.edges
-  const pageInfo = data.node?.cardsList.pageInfo
+  const cards = data.node?.idealiteCardsList.edges
+  const pageInfo = data.node?.idealiteCardsList.pageInfo
   const loadMore = () => {
     if (pageInfo.hasNextPage) {
       fetchMore({

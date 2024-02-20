@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { authenticateCeramic } from '../utils/index';
 import { useCeramicContext } from "../context/index";
 import * as Avatar from '@radix-ui/react-avatar';
+import { createExternalExtensionProvider } from '@metamask/providers';
+import { toast } from "sonner";
 
 export default function Profile({ userProfile }) {
     const clients = useCeramicContext()
@@ -29,6 +31,8 @@ export default function Profile({ userProfile }) {
     //     document.documentElement.classList.remove('dark')
     //   }
 
+    // 1. Define constants
+
     const handleLogout = () => {
         localStorage.removeItem("logged_in")
         localStorage.removeItem('ceramic:did_seed')
@@ -39,6 +43,16 @@ export default function Profile({ userProfile }) {
     }
 
     const handleEthPkh = async () => {
+        let provider = createExternalExtensionProvider();
+        if (!provider) {
+            toast.error("Please install Metamask.");
+        }
+        const chainId = await provider.request({ method: 'eth_chainId' });
+        if (chainId !== '0xa') {
+            toast.info("Please switch to the Optimism network.");
+            return
+        }
+
         localStorage.setItem("ceramic:auth_type", "eth");
         const res = await authenticateCeramic(ceramic, composeClient);
         if (res) {

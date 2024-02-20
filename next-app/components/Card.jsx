@@ -16,8 +16,8 @@ export default function Card({ content, currentTab }) {
 
 
     const UPDATE_NOTE = gql`
-    mutation UPDATE_NOTE($input: UpdateCardsInput!) {
-        updateCards(input: $input) {
+    mutation UPDATE_NOTE($input: UpdateIdealiteCardsInput!) {
+        updateIdealiteCards(input: $input) {
           document {
             id
             annotation
@@ -43,7 +43,7 @@ export default function Card({ content, currentTab }) {
             updatedAt: new Date().toISOString(),
             annotation: content,
             cid: IpfsHash,
-            mimeType: image?.type,
+            mimeType: uploadImage?.type,
             pinSize: PinSize,
         }
 
@@ -105,7 +105,7 @@ export default function Card({ content, currentTab }) {
         formData.set('file', file)
 
         try {
-            const res = await fetch("http://localhost:3000/api/cardImage", {
+            const res = await fetch("https://www.idealite.xyz/api/cardImage", {
                 method: 'POST',
                 body: formData
             });

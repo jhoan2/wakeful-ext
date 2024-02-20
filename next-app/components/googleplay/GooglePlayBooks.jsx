@@ -1,12 +1,45 @@
-import React, { useState } from 'react'
-import AddNote from './AddNote';
-import GetCards from './GetCards';
+import React, { useState } from 'react';
+import AddNote from '../AddNote';
+import GetCards from '../GetCards';
+import { useQuery, gql } from '@apollo/client';
+import AddBook from './AddBook';
 
-export default function Article({ currentTab, setCurrentResourceId, currentResourceId, setLoggedIn, loggedIn, }) {
+export default function GooglePlayBooks({ currentTab, setCurrentResourceId, currentResourceId, setLoggedIn, loggedIn, }) {
     const [openAddNote, setOpenAddNote] = useState(false)
-    const { title } = currentTab || ''
+    const { title, url } = currentTab || '';
+    const getBaseGooglePlayUrl = (url) => {
+        const hashIndex = url.indexOf('&');
+        if (hashIndex > -1) {
+            return url.substring(0, hashIndex)
+        }
+    }
+    const currentUrl = getBaseGooglePlayUrl(url)
+
+
     const refresh = () => {
         window.location.reload();
+    }
+
+    const CHECK_ACCOUNT_RESOURCES_FOR_BOOK = gql`
+    query checkIdealiteAccountResourcesForBook($url: String) {
+        viewer {
+          idealiteAccountResourcesList(first: 1, filters: {where: {url: {equalTo: $url}}}) {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const { loading, error, data } = useQuery(CHECK_ACCOUNT_RESOURCES_FOR_BOOK, {
+        variables: { url: currentUrl }
+    });
+
+    if (!data?.viewer?.idealiteAccountResourcesList[0]?.node) {
+        return <AddBook currentUrl={currentUrl} />
     }
 
     return (
@@ -24,7 +57,6 @@ export default function Article({ currentTab, setCurrentResourceId, currentResou
                     </button>
                 </div>
             </div>
-            <h2 className="text-2xl font-bold text-pretty text-center">{title}</h2>
             {openAddNote ?
                 <div className='border-2 rounded fixed p-4 w-full bg-gray-100 z-10'>
                     <AddNote

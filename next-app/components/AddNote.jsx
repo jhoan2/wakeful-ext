@@ -15,8 +15,8 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
     const [loadingNewResource, setLoadingNewResource] = useState(false)
 
     const ADD_NOTE = gql`
-    mutation ADD_NOTE($input: CreateCardsInput!) {
-        createCards(input: $input) {
+    mutation ADD_NOTE($input: CreateIdealiteCardsInput!) {
+        createIdealiteCards(input: $input) {
           document {
             id
           }
@@ -46,7 +46,7 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
 
 
     const createNewResource = async () => {
-        const res = await fetch('http://localhost:3000/api/createNewResource', {
+        const res = await fetch('https://www.idealite.xyz/api/createNewResource', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
         formData.set('file', file)
 
         try {
-            const res = await fetch("http://localhost:3000/api/cardImage", {
+            const res = await fetch("https://www.idealite.xyz/api/cardImage", {
                 method: 'POST',
                 body: formData
             });

@@ -9,8 +9,8 @@ export default function YoutubeAddNote({ currentTab, currentResourceId, setCurre
     const [image, setImage] = useState(null)
 
     const ADD_NOTE = gql`
-    mutation ADD_NOTE($input: CreateCardsInput!) {
-        createCards(input: $input) {
+    mutation ADD_NOTE($input: CreateIdealiteCardsInput!) {
+        createIdealiteCards(input: $input) {
           document {
             id
           }
@@ -39,7 +39,7 @@ export default function YoutubeAddNote({ currentTab, currentResourceId, setCurre
         formData.set('file', file)
 
         try {
-            const res = await fetch("http://localhost:3000/api/cardImage", {
+            const res = await fetch("https://www.idealite.xyz/api/cardImage", {
                 method: 'POST',
                 body: formData
             });

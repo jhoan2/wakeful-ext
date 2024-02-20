@@ -7,8 +7,8 @@ import { useUserContext } from '../context';
 export default function CardActionsButton({ id }) {
     const { userProfile } = useUserContext();
     const UPDATE_NOTE = gql`
-    mutation UPDATE_NOTE($input: UpdateCardsInput!) {
-        updateCards(input: $input) {
+    mutation UPDATE_NOTE($input: UpdateIdealiteCardsInput!) {
+        updateIdealiteCards(input: $input) {
           document {
             id
             annotation
@@ -57,7 +57,7 @@ export default function CardActionsButton({ id }) {
                     content: {
                         deleted: false,
                         projectId: projectId,
-                        cardId: id,
+                        idealiteCardId: id,
                     }
                 }
             }

@@ -5,11 +5,13 @@ import { useCeramicContext } from '../context/index';
 import { authenticateCeramic } from '../utils';
 import { ApolloClient, ApolloLink, InMemoryCache, Observable, ApolloProvider } from '@apollo/client';
 import { relayStylePagination } from "@apollo/client/utilities";
+import { Toaster } from 'sonner';
 
 function MyApp({ Component, pageProps }) {
   const clients = useCeramicContext()
   const { ceramic, composeClient } = clients
   const [loggedIn, setLoggedIn] = useState(true)
+
   const link = new ApolloLink((operation) => {
     return new Observable((observer) => {
       composeClient.execute(operation.query, operation.variables).then(
@@ -29,7 +31,7 @@ function MyApp({ Component, pageProps }) {
       typePolicies: {
         CeramicAccount: {
           fields: {
-            cardsList: relayStylePagination(),
+            idealiteCardsList: relayStylePagination(),
           },
         },
       },
@@ -157,7 +159,7 @@ function MyApp({ Component, pageProps }) {
     }
 
     const createNewResource = async (tab, clientMutationId) => {
-      const res = await fetch('http://localhost:3000/api/createNewResource', {
+      const res = await fetch('https://www.idealite.xyz/api/createNewResource', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,7 +174,7 @@ function MyApp({ Component, pageProps }) {
       })
 
       if (!res.ok) {
-        throw new Error('Server responded with an error: ' + res.status);
+        throw new Error('Server responded with an error: ' + res.statusText);
       }
       const data = await res.json();
       console.log(data)
@@ -180,7 +182,7 @@ function MyApp({ Component, pageProps }) {
     }
 
     const fetchImgSrc = async (imgUrl) => {
-      const res = await fetch('http://localhost:3000/api/saveImgUrl', {
+      const res = await fetch('https://www.idealite.xyz/api/saveImgUrl', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +193,7 @@ function MyApp({ Component, pageProps }) {
       })
 
       if (!res.ok) {
-        throw new Error('Server responded with an error: ' + res.status);
+        throw new Error('Server responded with an error: ' + res.statusText);
       }
 
       const data = await res.json();
@@ -277,8 +279,8 @@ function MyApp({ Component, pageProps }) {
       }
 
       const cardId = await composeClient.executeQuery(`
-      mutation CreateNewCard ($i: CreateCardsInput!) {
-        createCards(
+      mutation CreateNewCard ($i: CreateIdealiteCardsInput!) {
+        createIdealiteCards(
           input: $i
         ) {
           document {
@@ -318,6 +320,7 @@ function MyApp({ Component, pageProps }) {
                 loggedIn={loggedIn}
                 setLoggedIn={setLoggedIn}
               />
+              <Toaster richColors />
             </div>
           </CeramicWrapper>
         </div>
