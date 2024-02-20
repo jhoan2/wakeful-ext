@@ -7,10 +7,10 @@ import { definition } from "../definition";
 /**
  * Configure ceramic Client & create context.
  */
-const ceramic = new CeramicClient("http://localhost:7007");
+const ceramic = new CeramicClient("https://ceramic-idealite-mainnet.hirenodes.io/");
 
 const composeClient = new ComposeClient({
-  ceramic: "http://localhost:7007",
+  ceramic: "https://ceramic-idealite-mainnet.hirenodes.io/",
   // cast our definition as a RuntimeCompositeDefinition
   definition: definition,
 });

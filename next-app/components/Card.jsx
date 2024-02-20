@@ -105,7 +105,7 @@ export default function Card({ content, currentTab }) {
         formData.set('file', file)
 
         try {
-            const res = await fetch("http://localhost:3000/api/cardImage", {
+            const res = await fetch("https://www.idealite.xyz/api/cardImage", {
                 method: 'POST',
                 body: formData
             });
