@@ -1,68 +1,157 @@
-import styles from "../styles/Home.module.css";
+import { useEffect, useState } from "react";
+import Youtube from "../components/Youtube";
+import Article from "../components/Article";
+import getVideoId from 'get-video-id';
+import Profile from "../components/Profile";
+import { gql, useLazyQuery } from '@apollo/client';
+import { useUserContext } from "../context";
+import GooglePlayBooks from "../components/googleplay/GooglePlayBooks";
 
-const IndexPage = () => {
+function IndexPopup({ loggedIn, setLoggedIn }) {
+  const [currentResourceId, setCurrentResourceId] = useState('')
+  const [currentTab, setCurrentTab] = useState({})
+  const [youtubeId, setYoutubeId] = useState('')
+  const [websiteType, setWebsiteType] = useState('')
+  const { userProfile, getUserDetails } = useUserContext();
+  const getCurrentTab = async () => {
+    let queryOptions = { active: true, lastFocusedWindow: true };
+    // `tab` will either be a `tabs.Tab` instance or `undefined`.
+    let [tab] = await chrome.tabs.query(queryOptions);
+    return tab;
+  }
+
+  const GET_RESOURCE_ID = gql`
+  query getResourceId($url: String!) {
+    idealiteResourceIndex(filters: {where: {url: {equalTo: $url}}}, first: 1) {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+  `
+
+  const GET_USER_PROFILE = gql`
+  query getUserProfile {
+    viewer {
+      idealiteProfile {
+        bio
+        avatarCid
+        displayName
+      }
+    }
+  }
+  `
+  const [getResourceId] = useLazyQuery(GET_RESOURCE_ID, {
+    variables: { url: currentTab.url },
+    onCompleted: (data) => {
+      if (data && data.idealiteResourceIndex.edges.length > 0 && data.idealiteResourceIndex.edges[0].node.id) {
+        setCurrentResourceId(data.idealiteResourceIndex.edges[0].node.id);
+      }
+    },
+  });
+
+  const [getUserProfile] = useLazyQuery(GET_USER_PROFILE, {
+    onCompleted: (data) => {
+      if (data.viewer !== null) {
+        getUserDetails({
+          displayName: data.viewer.idealiteProfile.displayName,
+          avatarCid: data.viewer.idealiteProfile.avatarCid,
+          bio: data.viewer.idealiteProfile.bio
+        });
+      }
+    },
+  });
+
+  const onPanelOpen = async () => {
+    let tab = await getCurrentTab()
+    setCurrentTab(tab)
+    await getUserProfile()
+
+    if (tab.url.includes('youtube')) {
+      const { id } = getVideoId(tab.url);
+      if (id) {
+        const baseYoutubeUrl = 'https://www.youtube.com/watch?v=' + id
+        tab.url = baseYoutubeUrl
+        setCurrentTab(tab)
+        setYoutubeId(id)
+      }
+      setWebsiteType('youtube')
+      return
+    }
+
+    if (tab.url.includes('play.google.com/books/reader')) {
+      setCurrentTab(tab)
+      setWebsiteType('googleplay')
+      return
+    }
+
+    //If it's not youtube or google play books, then it must be an article
+    //get baseUrl from articles
+    const hashIndex = tab.url.indexOf('#');
+    if (hashIndex > -1) {
+      tab.url = tab.url.substring(0, hashIndex)
+      setCurrentTab(tab)
+    }
+    setWebsiteType('article')
+  }
+
+  useEffect(() => {
+    onPanelOpen()
+    getResourceId()
+  }, [])
+
+
+  if (!loggedIn) {
+    return (
+      <div className="dark:bg-gray-800 h-screen flex justify-center items-center">
+        <Profile userProfile={userProfile} />
+      </div>
+    )
+  }
+
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <span className={styles.logo}>
-            <img
-              src="assets/vercel.svg"
-              alt="Vercel Logo"
-              width={72}
-              height={16}
-            />
-          </span>
-        </a>
-      </footer>
+    <div className="dark:bg-gray-800 h-screen">
+      {
+        websiteType === 'youtube' ?
+          <Youtube
+            currentTab={currentTab}
+            youtubeId={youtubeId}
+            currentResourceId={currentResourceId}
+            setCurrentResourceId={setCurrentResourceId}
+            loggedIn={loggedIn}
+            setLoggedIn={setLoggedIn}
+          />
+          :
+          null
+      }
+      {
+        websiteType === 'googleplay' ?
+          <GooglePlayBooks
+            currentTab={currentTab}
+            currentResourceId={currentResourceId}
+            setCurrentResourceId={setCurrentResourceId}
+            loggedIn={loggedIn}
+            setLoggedIn={setLoggedIn}
+          />
+          :
+          null
+      }
+      {
+        websiteType === 'article' ?
+          <Article
+            currentTab={currentTab}
+            setCurrentResourceId={setCurrentResourceId}
+            currentResourceId={currentResourceId}
+            loggedIn={loggedIn}
+            setLoggedIn={setLoggedIn}
+          />
+          :
+          null
+      }
     </div>
   );
 };
 
-export default IndexPage;
+export default IndexPopup;

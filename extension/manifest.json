@@ -1,10 +1,42 @@
 {
-  "name": "Next Chrome",
-  "description": "Next.js Chrome Extension starter",
+  "name": "Idealite",
+  "description": "Save notes from articles and youtube to Idealite.",
   "version": "0.0.1",
   "manifest_version": 3,
   "action": {
-    "default_title": "Next.js app",
-    "default_popup": "index.html"
+    "default_title": "Idealite"
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "host_permissions": [
+    "http://api.com/*",
+    "http://*/",
+    "https://*/"
+  ],
+  "permissions": [
+    "tabs",
+    "tabCapture",
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "sidePanel"
+  ],
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "externally_connectable": {
+    "matches": [
+      "https://metamask.io/*"
+    ],
+    "ids": [
+      "*"
+    ]
+  },
+  "icons": {
+    "16": "./next-assets/icon16.png",
+    "32": "./next-assets/icon32.png",
+    "48": "./next-assets/icon48.png",
+    "128": "./next-assets/icon128.png"
   }
 }
