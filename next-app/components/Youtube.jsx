@@ -112,7 +112,7 @@ export default function YoutubeAnnotations({
             const file = new File([canvasBlob], `image.jpg`, { type: 'image/jpeg' });
             formData.set('file', file)
 
-            const res = await fetch('https://www.idealite.xyz/api/cardImage', {
+            const res = await fetch('http://localhost:3000/api/cardImage', {
                 method: 'POST',
                 body: formData,
             })
@@ -134,7 +134,7 @@ export default function YoutubeAnnotations({
         const clientMutationId = composeClient.id
         const date = new Date().toISOString()
 
-        const res = await fetch('https://www.idealite.xyz/api/createNewYoutubeResource', {
+        const res = await fetch('http://localhost:3000/api/createNewYoutubeResource', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

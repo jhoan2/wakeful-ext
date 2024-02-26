@@ -8,7 +8,7 @@ export default function BookCard({ author, title, coverUrl, published, firstSent
     const clientMutationId = composeClient.id
 
     const createNewBookResource = async () => {
-        const res = await fetch('https://www.idealite.xyz/api/createNewBookResource', {
+        const res = await fetch('http://localhost:3000/api/createNewBookResource', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -46,7 +46,7 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
 
 
     const createNewResource = async () => {
-        const res = await fetch('https://www.idealite.xyz/api/createNewResource', {
+        const res = await fetch('http://localhost:3000/api/createNewResource', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
         formData.set('file', file)
 
         try {
-            const res = await fetch("https://www.idealite.xyz/api/cardImage", {
+            const res = await fetch("http://localhost:3000/api/cardImage", {
                 method: 'POST',
                 body: formData
             });
@@ -132,7 +132,7 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
             setCurrentResourceId(newArticleResourceId)
             setLoadingNewResource(false)
         }
-
+        console.log(newArticleResourceId)
         const contentObj = await getContent();
         const scrollY = contentObj.scrollY;
         const content = editor.getHTML()

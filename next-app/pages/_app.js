@@ -159,7 +159,7 @@ function MyApp({ Component, pageProps }) {
     }
 
     const createNewResource = async (tab, clientMutationId) => {
-      const res = await fetch('https://www.idealite.xyz/api/createNewResource', {
+      const res = await fetch('http://localhost:3000/api/createNewResource', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ function MyApp({ Component, pageProps }) {
     }
 
     const fetchImgSrc = async (imgUrl) => {
-      const res = await fetch('https://www.idealite.xyz/api/saveImgUrl', {
+      const res = await fetch('http://localhost:3000/api/saveImgUrl', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
