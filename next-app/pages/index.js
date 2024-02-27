@@ -89,11 +89,9 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
 
     //If it's not youtube or google play books, then it must be an article
     //get baseUrl from articles
-    const hashIndex = tab.url.indexOf('#');
-    if (hashIndex > -1) {
-      tab.url = tab.url.substring(0, hashIndex)
-      setCurrentTab(tab)
-    }
+    const urlObject = new URL(tab.url)
+    tab.url = urlObject.origin + urlObject.pathname
+    setCurrentTab(tab)
     setWebsiteType('article')
   }
 
