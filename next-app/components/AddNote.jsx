@@ -4,6 +4,7 @@ import { useCeramicContext } from '../context';
 import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import EditorBubbleMenu from './EditorBubbleMenu';
 import StarterKit from '@tiptap/starter-kit';
+import { toast } from 'sonner';
 
 export default function AddNote({ currentResourceId, setCurrentResourceId, currentTab, setOpenAddNote }) {
     const clients = useCeramicContext()
@@ -13,6 +14,17 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
     const [image, setImage] = useState(null)
     const clientMutationId = composeClient.id
     const [loadingNewResource, setLoadingNewResource] = useState(false)
+
+    const getPageNumber = (url) => {
+        const params = url.split("&");
+        for (const param of params) {
+            if (param.startsWith("pg=GBS.PA")) {
+                const pageNumber = param.split("A")[1];
+                return pageNumber
+            }
+        }
+        return null;
+    }
 
     const ADD_NOTE = gql`
     mutation ADD_NOTE($input: CreateIdealiteCardsInput!) {
@@ -155,6 +167,7 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
             resourceId: newArticleResourceId,
             url: currentTab.url,
             deleted: false,
+            googleBooksPage: getPageNumber(currentTab.url),
         }
 
         for (const key in noteContent) {
@@ -174,6 +187,9 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
     }
 
     if (error) {
+        if (error.message.includes('Capability does not have appropriate permissions to update this Stream')) {
+            toast.error('Please re-login')
+        }
         return `Submission error! ${error.message}`;
     }
 

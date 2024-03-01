@@ -33,6 +33,7 @@ export default function CardNotes({ currentTab, setCurrentResourceId }) {
               updatedAt
               videoTime
               quote
+              googleBooksPage
             }
           }
           pageInfo {

@@ -7,7 +7,7 @@ import CardImage from './CardImage';
 import CardActionsButton from './CardActionsButton';
 
 export default function Card({ content, currentTab }) {
-    const { id, quote, annotation, pageYOffset, scrollHeight, cid } = content.node
+    const { id, quote, annotation, pageYOffset, scrollHeight, cid, googleBooksPage } = content.node
     const currentTabId = currentTab.id
     const currentUrl = currentTab.url
     const [inputImage, setInputImage] = useState(false)
@@ -201,6 +201,15 @@ export default function Card({ content, currentTab }) {
                     </button> */}
                 </div>
             </div>
+            {googleBooksPage ?
+                <div className='flex justify-start pt-2'>
+                    <p className=' bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-yellow-300 border border-yellow-300'>
+                        page: {googleBooksPage}
+                    </p>
+                </div>
+                :
+                null
+            }
         </div>
     )
 }
