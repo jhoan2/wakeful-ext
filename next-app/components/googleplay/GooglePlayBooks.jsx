@@ -13,8 +13,8 @@ export default function GooglePlayBooks({ currentTab, setCurrentResourceId, curr
             return url.substring(0, hashIndex)
         }
     }
-    const currentUrl = getBaseGooglePlayUrl(url)
 
+    const currentUrl = getBaseGooglePlayUrl(url)
 
     const refresh = () => {
         window.location.reload();
@@ -23,7 +23,7 @@ export default function GooglePlayBooks({ currentTab, setCurrentResourceId, curr
     const CHECK_ACCOUNT_RESOURCES_FOR_BOOK = gql`
     query checkIdealiteAccountResourcesForBook($url: String) {
         viewer {
-          idealiteAccountResourcesList(first: 1, filters: {where: {url: {equalTo: $url}}}) {
+            recipientOfIdealiteAccountResourcesList(first: 1, filters: {where: {url: {equalTo: $url}}}) {
             edges {
               node {
                 id
@@ -38,8 +38,14 @@ export default function GooglePlayBooks({ currentTab, setCurrentResourceId, curr
         variables: { url: currentUrl }
     });
 
-    if (!data?.viewer?.idealiteAccountResourcesList[0]?.node) {
-        return <AddBook currentUrl={currentUrl} />
+    if (data?.viewer?.recipientOfIdealiteAccountResourcesList.edges.length === 0) {
+        return (
+            <AddBook
+                currentUrl={currentUrl}
+                loggedIn={loggedIn}
+                setLoggedIn={setLoggedIn}
+            />
+        )
     }
 
     return (

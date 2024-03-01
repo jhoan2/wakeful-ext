@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import BookCard from './BookCard';
 import BookCardSkeleton from './BookCardSkeleton';
 
-export default function AddBook({ currentUrl }) {
+export default function AddBook({ currentUrl, loggedIn, setLoggedIn }) {
     const [query, setQuery] = useState('')
     const [results, setResults] = useState([])
     const [limit, setLimit] = useState(10);

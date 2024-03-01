@@ -30,7 +30,9 @@ export default function BookCard({ author, title, coverUrl, published, firstSent
         const data = await res.json();
         if (data.newResourceId) {
             toast.success('Successfully added book.')
-            window.location.reload()
+            setTimeout(function () {
+                window.location.reload()
+            }, 1000);
         }
         return
     }
