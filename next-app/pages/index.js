@@ -13,6 +13,7 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
   const [youtubeId, setYoutubeId] = useState('')
   const [websiteType, setWebsiteType] = useState('')
   const { userProfile, getUserDetails } = useUserContext();
+
   const getCurrentTab = async () => {
     let queryOptions = { active: true, lastFocusedWindow: true };
     // `tab` will either be a `tabs.Tab` instance or `undefined`.
@@ -99,7 +100,6 @@ function IndexPopup({ loggedIn, setLoggedIn }) {
     onPanelOpen()
     getResourceId()
   }, [])
-
 
   if (!loggedIn) {
     return (
