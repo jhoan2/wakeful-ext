@@ -4,7 +4,14 @@ import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import EditorBubbleMenu from './EditorBubbleMenu';
 
-export default function YoutubeAddNote({ currentTab, currentResourceId, setCurrentResourceId, createNewYoutubeResource, setYoutubeOpenAddNote }) {
+export default function YoutubeAddNote({
+    currentTab,
+    currentResourceId,
+    setCurrentResourceId,
+    createNewYoutubeResource,
+    setYoutubeOpenAddNote,
+    loadingNewYoutubeResource
+}) {
     const [inputImage, setInputImage] = useState(false)
     const [image, setImage] = useState(null)
 
@@ -160,6 +167,11 @@ export default function YoutubeAddNote({ currentTab, currentResourceId, setCurre
                         </button> */}
                 </div>
             </div>
+            {
+                loadingNewYoutubeResource ?
+                    <div className='text-right'>Creating New Resource...</div> :
+                    null
+            }
         </div>
     )
 }

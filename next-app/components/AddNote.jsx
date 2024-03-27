@@ -34,9 +34,24 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
           }
         }
       }`
+
     const [addNote, { data, loading, error }] = useMutation(ADD_NOTE, {
         onCompleted: () => setOpenAddNote(false),
         refetchQueries: ['getCardsPeUrlPerUser'],
+    });
+
+    const CREATE_ACCOUNT_RESOURCE = gql`
+    mutation createAccountResource($input: CreateIdealiteAccountResourcesInput!) {
+        createIdealiteAccountResources(input: $input) {
+          document {
+            id
+          }
+        }
+      }
+      `
+
+    const [createAccountResource] = useMutation(CREATE_ACCOUNT_RESOURCE, {
+        onError: (error) => console.log('Error creating account resource: ' + error.message)
     });
 
     function getScrollY() {
@@ -76,6 +91,20 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
             throw new Error('Server responded with an error: ' + res.status);
         }
         const data = await res.json();
+        await createAccountResource({
+            variables: {
+                input: {
+                    "content": {
+                        recipient: clientMutationId,
+                        resourceId: data.newResourceId,
+                        url: currentTab.url,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        readingStatus: 'READING'
+                    }
+                }
+            }
+        })
         return data.newResourceId
     }
 
@@ -132,11 +161,11 @@ export default function AddNote({ currentResourceId, setCurrentResourceId, curre
 
     const saveNote = async () => {
         let newArticleResourceId = currentResourceId
-
         //if no resource yet, create one first 
         if (!currentResourceId) {
             setLoadingNewResource(true)
             newArticleResourceId = await createNewResource();
+            //then set the id returned from the connection to the new article resource id  
             if (!newArticleResourceId) {
                 setLoadingNewResource(false)
                 throw new Error('Error creating new resource');

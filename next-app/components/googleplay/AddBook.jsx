@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import BookCard from './BookCard';
 import BookCardSkeleton from './BookCardSkeleton';
 
-export default function AddBook({ currentUrl, loggedIn, setLoggedIn }) {
+export default function AddBook({ currentUrl, loggedIn, setLoggedIn, setCurrentResourceId }) {
     const [query, setQuery] = useState('')
     const [results, setResults] = useState([])
     const [limit, setLimit] = useState(10);
@@ -97,6 +97,7 @@ export default function AddBook({ currentUrl, loggedIn, setLoggedIn }) {
                                 published={book?.first_publish_year ? book.first_publish_year : 0}
                                 coverUrl={`https://covers.openlibrary.org/b/id/${book?.cover_i}-S.jpg`}
                                 currentUrl={currentUrl}
+                                setCurrentResourceId={setCurrentResourceId}
                             />
                         })}
                     </div>

@@ -177,8 +177,31 @@ function MyApp({ Component, pageProps }) {
         throw new Error('Server responded with an error: ' + res.statusText);
       }
       const data = await res.json();
+
+      let variablesValues = {
+        input: {
+          "content": {
+            recipient: clientMutationId,
+            resourceId: data.newResourceId,
+            url: tab.url,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            readingStatus: 'READING'
+          }
+        }
+      }
+
+      await composeClient.executeQuery(`
+      mutation createAccountResource($input: CreateIdealiteAccountResourcesInput!) {
+        createIdealiteAccountResources(input: $input) {
+          document {
+            id
+          }
+        }
+      }
+    `, variablesValues)
       console.log(data)
-      return data.newResourceId.data?.createIdealiteResource.document.id
+      return data.newResourceId
     }
 
     const fetchImgSrc = async (imgUrl) => {

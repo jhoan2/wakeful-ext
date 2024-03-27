@@ -1,11 +1,26 @@
 import React from 'react'
 import { useCeramicContext } from '../../context';
 import { toast } from 'sonner';
+import { gql, useMutation } from '@apollo/client';
 
-export default function BookCard({ author, title, coverUrl, published, firstSentence, currentUrl }) {
+export default function BookCard({ author, title, coverUrl, published, firstSentence, currentUrl, setCurrentResourceId }) {
     const clients = useCeramicContext()
     const { composeClient } = clients
     const clientMutationId = composeClient.id
+
+    const CREATE_ACCOUNT_RESOURCE = gql`
+    mutation createAccountResource($input: CreateIdealiteAccountResourcesInput!) {
+        createIdealiteAccountResources(input: $input) {
+          document {
+            id
+          }
+        }
+      }
+      `
+
+    const [createAccountResource] = useMutation(CREATE_ACCOUNT_RESOURCE, {
+        onError: (error) => console.log('Error creating account resource: ' + error.message)
+    });
 
     const createNewBookResource = async () => {
         const res = await fetch('http://localhost:3000/api/createNewBookResource', {
@@ -28,8 +43,25 @@ export default function BookCard({ author, title, coverUrl, published, firstSent
         }
 
         const data = await res.json();
+
+        await createAccountResource({
+            variables: {
+                input: {
+                    "content": {
+                        recipient: clientMutationId,
+                        resourceId: data.newResourceId,
+                        url: currentUrl,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        readingStatus: 'READING'
+                    }
+                }
+            }
+        })
+
         if (data.newResourceId) {
             toast.success('Successfully added book.')
+            setCurrentResourceId(data.newResourceId)
             setTimeout(function () {
                 window.location.reload()
             }, 1000);

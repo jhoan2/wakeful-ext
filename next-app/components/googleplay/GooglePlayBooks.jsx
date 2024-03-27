@@ -41,6 +41,7 @@ export default function GooglePlayBooks({ currentTab, setCurrentResourceId, curr
     if (data?.viewer?.recipientOfIdealiteAccountResourcesList.edges.length === 0) {
         return (
             <AddBook
+                setCurrentResourceId={setCurrentResourceId}
                 currentUrl={currentUrl}
                 loggedIn={loggedIn}
                 setLoggedIn={setLoggedIn}

@@ -26,6 +26,7 @@ export default function YoutubeAnnotations({
     const videoID = youtubeId;
     const lang = 'en'; // Optional, default is 'en' (English)
     const [subtitles, setSubtitles] = useState([]);
+    const [loadingNewYoutubeResource, setLoadingNewYoutubeResource] = useState(false)
 
     const fetchVideoDetails = async (videoID, lang = 'en') => {
         try {
@@ -127,7 +128,22 @@ export default function YoutubeAnnotations({
         }
     }
 
+    const CREATE_ACCOUNT_RESOURCE = gql`
+    mutation createAccountResource($input: CreateIdealiteAccountResourcesInput!) {
+        createIdealiteAccountResources(input: $input) {
+          document {
+            id
+          }
+        }
+      }
+      `
+
+    const [createAccountResource] = useMutation(CREATE_ACCOUNT_RESOURCE, {
+        onError: (error) => console.log('Error creating account resource: ' + error.message)
+    });
+
     const createNewYoutubeResource = async () => {
+        setLoadingNewYoutubeResource(true)
         const youtubeObj = await getScreenshotYoutube()
         //youtubeObj = { cid: rootCid }
         const cid = youtubeObj.pinataData.IpfsHash
@@ -153,7 +169,24 @@ export default function YoutubeAnnotations({
             throw new Error('Server responded with an error: ' + res.status);
         }
         const data = await res.json();
-        return data.newResourceId.data.createIdealiteResource.document.id
+        console.log(data)
+
+        await createAccountResource({
+            variables: {
+                input: {
+                    "content": {
+                        recipient: clientMutationId,
+                        resourceId: data.newResourceId,
+                        url: currentTab.url,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        readingStatus: 'READING'
+                    }
+                }
+            }
+        })
+
+        return data.newResourceId
     }
 
     const ADD_NOTE = gql`
@@ -199,6 +232,7 @@ export default function YoutubeAnnotations({
                 }
             }
         })
+        setLoadingNewYoutubeResource(false)
     }
 
     const showNotesPanel = () => {
@@ -253,7 +287,10 @@ export default function YoutubeAnnotations({
                         currentResourceId={currentResourceId}
                         setCurrentResourceId={setCurrentResourceId}
                         createNewYoutubeResource={createNewYoutubeResource}
-                        setYoutubeOpenAddNote={setYoutubeOpenAddNote} />
+                        setYoutubeOpenAddNote={setYoutubeOpenAddNote}
+                        loadingNewYoutubeResource={loadingNewYoutubeResource}
+                        setLoadingNewYoutubeResource={setLoadingNewYoutubeResource}
+                    />
                 </div>
                 : null
             }
